@@ -1,7 +1,8 @@
+import { z } from "zod";
+
 // Workspaces Types
 export type CreateWorkspacePayload = {
   name: string;
-  user: string;
   image?: string;
 };
 // Collection Types
@@ -15,11 +16,8 @@ export type CreateCollectionPayload = {
 
 // Document Types
 export type CreateDocumentPayload = {
-  user: string;
   title?: string;
   content?: string;
-  workspaceId?: string;
-  collectionId?: string;
 };
 
 export type AddDocumentToCollectionPayload = {
@@ -33,7 +31,15 @@ export type RegisterUserPayload = {
   name: string;
   email: string;
   password: string;
+  image?: string;
 };
+
+export const RegisterSchema = z.object({
+  name: z.string().min(5),
+  email: z.string().email(),
+  password: z.string().min(6),
+  image: z.string().optional(),
+});
 
 export type TabType = "documents" | "collections" | "tags";
 

@@ -75,7 +75,6 @@ const CreateWorkspace = () => {
               const { data, error } = await createWorkspace({
                 image: workspaceImage,
                 name: title,
-                user: user?.user?.id as string,
               });
               if (error) {
                 toast.error("Failed to create workspace" + error);
@@ -83,10 +82,7 @@ const CreateWorkspace = () => {
               }
               toast.success(`Workspace ${data?.name} created successfully`);
               setIsCreateWorkspaceDialogOpen!(false);
-              await queryClient.refetchQueries([
-                "get-workspaces",
-                user?.user?.id as string,
-              ]);
+              await queryClient.refetchQueries(["get-workspaces"]);
             })}
           >
             <label>

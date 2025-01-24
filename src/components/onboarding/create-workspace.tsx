@@ -54,7 +54,6 @@ const CreateWorkspace = () => {
     const { data, error } = await createWorkspace({
       image: workspaceImage,
       name: values?.name as string,
-      user: user?.user?.id as string,
     });
     if (error && !data) {
       toast.error("Failed to create workspace" + error);
@@ -67,10 +66,7 @@ const CreateWorkspace = () => {
       slug: data?.slug,
     };
     await update({ ...user, user: { ...user?.user, activeWorkspace: w } });
-    await queryClient.refetchQueries([
-      "get-workspaces",
-      user?.user?.id as string,
-    ]);
+    await queryClient.refetchQueries(["get-workspaces"]);
     router.push(`/w/${data?.id}`);
   });
   return (

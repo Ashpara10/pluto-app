@@ -37,12 +37,12 @@ const Page = () => {
                 />
               );
             })
-          : workspaces?.map((workspace, i) => {
+          : workspaces?.map(({ workspace }, i) => {
               return (
                 <Link
                   key={i}
                   prefetch={true}
-                  href={`/w/${workspace?.id}`}
+                  href={`/w/${workspace?.slug}`}
                   className="w-full flex items-start justify-between rounded-lg border border-neutral-300/60 p-3 dark:border-lightGray/10 cursor-pointer "
                 >
                   <div onClick={() => handleWorkspaceClick(workspace)}>
@@ -60,10 +60,7 @@ const Page = () => {
                         return;
                       }
                       toast.success("Workspace Deleted");
-                      queryClient.refetchQueries([
-                        "get-workspaces",
-                        data?.user?.id,
-                      ]);
+                      queryClient.refetchQueries(["get-workspaces"]);
                     }}
                   >
                     <Trash2 className="size-4 opacity-80" />

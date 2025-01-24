@@ -5,8 +5,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import { Workspace } from "../db/schema";
-import { getUserWorkspaces, getWorkspaceByID } from "../db/workspaces";
-import { isValidUUID } from "../utils";
+import { getUserWorkspaces, getWorkspaceBySlug } from "../db/workspaces";
 
 const cachedGetUserWorkspaces = async () => getUserWorkspaces();
 export const useWorkspaces = () => {
@@ -17,7 +16,7 @@ export const useWorkspaces = () => {
   );
   const { workspace: workspaceId } = useParams();
   const { data, isLoading, refetch } = useQuery(
-    ["get-workspaces", user?.user?.id as string],
+    ["get-workspaces"],
     async () => await cachedGetUserWorkspaces(),
     { enabled: false }
   );
@@ -27,12 +26,12 @@ export const useWorkspaces = () => {
   }, [user, refetch]);
 
   useEffect(() => {
-    if (!workspaceId || !isValidUUID(workspaceId as string)) {
+    if (!workspaceId) {
       router.push("/workspace");
       return;
     }
     (async () => {
-      const workspace = await getWorkspaceByID(workspaceId as string);
+      const workspace = await getWorkspaceBySlug(workspaceId as string);
       // console.log({ workspace, workspaceId });
       if (workspace?.error) {
         toast.error(workspace?.error);

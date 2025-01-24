@@ -1,6 +1,7 @@
+import { getServerAuthSession } from "../auth";
 import { getSlug } from "../utils";
 import { db } from "./drizzle";
-import { collections, NewCollection } from "./schema";
+import { collections, NewCollection, workspaceToCollections } from "./schema";
 
 export type CreateCollectionPayload = {
   name: string;
@@ -13,20 +14,26 @@ export type CreateCollectionPayload = {
 export const createCollection = async ({
   name,
   tags,
-  user,
-  workspace,
-  documents,
 }: CreateCollectionPayload) => {
   try {
+    const session = await getServerAuthSession();
     const collectionSlug = getSlug(name);
-    const collection = await db.insert(collections).values({
-      name: name,
-      slug: collectionSlug,
-      tags: tags || [],
-      workspaceId: workspace,
-      userId: user,
-      documents: documents || [],
-    } as NewCollection);
+    const collection = await db
+      .insert(collections)
+      .values({
+        name: name,
+        slug: collectionSlug,
+        tags: tags || [],
+      } as NewCollection)
+      .returning();
+    if (collection.length === 0) {
+      throw new Error("Failed to create collection");
+    }
+
+    await db.insert(workspaceToCollections).values({
+      collectionSlug: collectionSlug,
+      workspaceSlug: session?.user?.activeWorkspace?.slug as string,
+    });
 
     return { data: collection, error: null };
   } catch (error) {

@@ -1,32 +1,37 @@
+"use server";
 import { eq } from "drizzle-orm";
-import { getSession } from "next-auth/react";
+import { getServerAuthSession } from "../auth";
 import { CreateWorkspacePayload } from "../types";
 import { getSlug } from "../utils";
 import { db } from "./drizzle";
-import { workspaces } from "./schema";
+import { usersToWorkspaces, workspaces } from "./schema";
 
 export const getUserWorkspaces = async () => {
-  const session = await getSession();
+  const session = await getServerAuthSession();
   if (!session) {
     throw new Error("USER-WORKSPACES: User not found");
   }
   const userWorkspaces = await db
-    .select()
+    .select({ workspace: workspaces })
     .from(workspaces)
-    .where(eq(workspaces?.user, session?.user?.id as string));
+    .innerJoin(
+      usersToWorkspaces,
+      eq(workspaces.slug, usersToWorkspaces.workspaceSlug)
+    )
+    .where(eq(usersToWorkspaces.userId, session.user.id as string));
 
   return userWorkspaces;
 };
 
-export const getWorkspaceByID = async (id: string) => {
+export const getWorkspaceBySlug = async (slug: string) => {
   try {
-    if (!id) {
-      throw new Error("Provide a valid workspace ID");
+    if (!slug) {
+      throw new Error("Provide a valid workspace slug");
     }
     const w = await db
       .select()
       .from(workspaces)
-      .where(eq(workspaces?.id, id))
+      .where(eq(workspaces?.slug, slug))
       .limit(1);
 
     return { data: w[0], error: null };
@@ -37,16 +42,21 @@ export const getWorkspaceByID = async (id: string) => {
 
 export const createWorkspace = async (payload: CreateWorkspacePayload) => {
   try {
+    const session = await getServerAuthSession();
     const slug = getSlug(payload?.name);
     const workspace = await db
       .insert(workspaces)
       .values({
         name: payload?.name,
-        user: payload?.user,
         image: payload?.image,
         slug: slug,
       })
       .returning();
+
+    await db.insert(usersToWorkspaces).values({
+      workspaceSlug: slug,
+      userId: session?.user?.id as string,
+    });
     return { data: workspace[0], error: null };
   } catch (error) {
     return { data: null, error: (error as Error).message };

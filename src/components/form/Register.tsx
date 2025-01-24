@@ -1,5 +1,5 @@
 "use client";
-import { RegisterSchema, register as signUp } from "@/lib/actions";
+import { register as signUp } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { EyeIcon, EyeOffIcon, Loader } from "lucide-react";
@@ -10,6 +10,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Button } from "../ui/button";
+import { RegisterSchema } from "@/lib/types";
 
 const Register = () => {
   const router = useRouter();

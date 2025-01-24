@@ -1,3 +1,4 @@
+"use server";
 import {
   Collection,
   Document,
@@ -6,13 +7,12 @@ import {
   Workspace,
 } from "@/lib/db/schema";
 import { compare, hash } from "bcryptjs";
-import { getCookie, setCookie } from "cookies-next";
 import { eq } from "drizzle-orm";
 import { jwtVerify, SignJWT } from "jose";
 import { z } from "zod";
 import { instance } from "./axios";
 import { db } from "./db/drizzle";
-import { SortDocumentBy } from "./types";
+import { RegisterSchema, SortDocumentBy } from "./types";
 import { getAvatarByUserInitials } from "./utils";
 
 const key = new TextEncoder().encode("532d15e19a1c159dda7474c6c773ff87");
@@ -44,13 +44,6 @@ export async function verifyJWTPayload(input: string) {
   });
   return payload;
 }
-
-export const RegisterSchema = z.object({
-  name: z.string().min(5),
-  email: z.string().email(),
-  password: z.string().min(6),
-  image: z.string().optional(),
-});
 
 export const register = async (payload: z.infer<typeof RegisterSchema>) => {
   const { email, image, name, password } = payload;

@@ -1,9 +1,67 @@
 {
-  "id": "21a446ef-4501-4902-95e3-d6490b2bdbb1",
+  "id": "b8165f59-4fdb-4698-8edb-a76a074fcbcd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.collection_to_documents": {
+      "name": "collection_to_documents",
+      "schema": "",
+      "columns": {
+        "collection_slug": {
+          "name": "collection_slug",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "collection_to_documents_collection_slug_collections_slug_fk": {
+          "name": "collection_to_documents_collection_slug_collections_slug_fk",
+          "tableFrom": "collection_to_documents",
+          "tableTo": "collections",
+          "columnsFrom": [
+            "collection_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "collection_to_documents_document_id_documents_id_fk": {
+          "name": "collection_to_documents_document_id_documents_id_fk",
+          "tableFrom": "collection_to_documents",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "collection_to_documents_collection_slug_document_id_pk": {
+          "name": "collection_to_documents_collection_slug_document_id_pk",
+          "columns": [
+            "collection_slug",
+            "document_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "public.collections": {
       "name": "collections",
       "schema": "",
@@ -17,15 +75,15 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(30)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "slug": {
           "name": "slug",
-          "type": "text",
+          "type": "varchar(40)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "tags": {
           "name": "tags",
@@ -33,18 +91,6 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'{}'"
-        },
-        "workspace_id": {
-          "name": "workspace_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -68,36 +114,17 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "collections_workspace_id_workspaces_id_fk": {
-          "name": "collections_workspace_id_workspaces_id_fk",
-          "tableFrom": "collections",
-          "tableTo": "workspaces",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "collections_user_id_users_id_fk": {
-          "name": "collections_user_id_users_id_fk",
-          "tableFrom": "collections",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "collections_slug_unique": {
+          "name": "collections_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
       "checkConstraints": {}
     },
     "public.documents": {
@@ -143,24 +170,6 @@
           "notNull": false,
           "default": false
         },
-        "author_id": {
-          "name": "author_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "workspace_id": {
-          "name": "workspace_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "collection_id": {
-          "name": "collection_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -183,47 +192,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "documents_author_id_users_id_fk": {
-          "name": "documents_author_id_users_id_fk",
-          "tableFrom": "documents",
-          "tableTo": "users",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "documents_workspace_id_workspaces_id_fk": {
-          "name": "documents_workspace_id_workspaces_id_fk",
-          "tableFrom": "documents",
-          "tableTo": "workspaces",
-          "columnsFrom": [
-            "workspace_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "documents_collection_id_collections_id_fk": {
-          "name": "documents_collection_id_collections_id_fk",
-          "tableFrom": "documents",
-          "tableTo": "collections",
-          "columnsFrom": [
-            "collection_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
@@ -265,8 +234,7 @@
         },
         "auth_provider": {
           "name": "auth_provider",
-          "type": "auth_provider",
-          "typeSchema": "public",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "default": "'credentials'"
@@ -306,6 +274,187 @@
       },
       "checkConstraints": {}
     },
+    "public.user_to_workspace": {
+      "name": "user_to_workspace",
+      "schema": "",
+      "columns": {
+        "workspace_slug": {
+          "name": "workspace_slug",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'member'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_to_workspace_workspace_slug_workspaces_slug_fk": {
+          "name": "user_to_workspace_workspace_slug_workspaces_slug_fk",
+          "tableFrom": "user_to_workspace",
+          "tableTo": "workspaces",
+          "columnsFrom": [
+            "workspace_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_to_workspace_user_id_users_id_fk": {
+          "name": "user_to_workspace_user_id_users_id_fk",
+          "tableFrom": "user_to_workspace",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_to_workspace_workspace_slug_user_id_pk": {
+          "name": "user_to_workspace_workspace_slug_user_id_pk",
+          "columns": [
+            "workspace_slug",
+            "user_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.workspace_to_collections": {
+      "name": "workspace_to_collections",
+      "schema": "",
+      "columns": {
+        "workspace_slug": {
+          "name": "workspace_slug",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collection_slug": {
+          "name": "collection_slug",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "workspace_to_collections_workspace_slug_workspaces_slug_fk": {
+          "name": "workspace_to_collections_workspace_slug_workspaces_slug_fk",
+          "tableFrom": "workspace_to_collections",
+          "tableTo": "workspaces",
+          "columnsFrom": [
+            "workspace_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "workspace_to_collections_collection_slug_collections_slug_fk": {
+          "name": "workspace_to_collections_collection_slug_collections_slug_fk",
+          "tableFrom": "workspace_to_collections",
+          "tableTo": "collections",
+          "columnsFrom": [
+            "collection_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "workspace_to_collections_workspace_slug_collection_slug_pk": {
+          "name": "workspace_to_collections_workspace_slug_collection_slug_pk",
+          "columns": [
+            "workspace_slug",
+            "collection_slug"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "public.workspace_to_documents": {
+      "name": "workspace_to_documents",
+      "schema": "",
+      "columns": {
+        "workspace_slug": {
+          "name": "workspace_slug",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "workspace_to_documents_workspace_slug_workspaces_slug_fk": {
+          "name": "workspace_to_documents_workspace_slug_workspaces_slug_fk",
+          "tableFrom": "workspace_to_documents",
+          "tableTo": "workspaces",
+          "columnsFrom": [
+            "workspace_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "workspace_to_documents_document_id_documents_id_fk": {
+          "name": "workspace_to_documents_document_id_documents_id_fk",
+          "tableFrom": "workspace_to_documents",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "workspace_to_documents_workspace_slug_document_id_pk": {
+          "name": "workspace_to_documents_workspace_slug_document_id_pk",
+          "columns": [
+            "workspace_slug",
+            "document_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "public.workspaces": {
       "name": "workspaces",
       "schema": "",
@@ -319,27 +468,21 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(30)",
           "primaryKey": false,
           "notNull": true
         },
         "slug": {
           "name": "slug",
-          "type": "text",
+          "type": "varchar(40)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "image": {
           "name": "image",
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "user": {
-          "name": "user",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
         },
         "created_at": {
           "name": "created_at",
@@ -363,28 +506,14 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "workspaces_user_users_id_fk": {
-          "name": "workspaces_user_users_id_fk",
-          "tableFrom": "workspaces",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "workspaces_name_unique": {
-          "name": "workspaces_name_unique",
+        "workspaces_slug_unique": {
+          "name": "workspaces_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "name"
+            "slug"
           ]
         }
       },

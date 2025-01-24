@@ -3,7 +3,8 @@ import { revalidateDocumentData } from "@/app/(dashboard)/w/[workspace]/document
 import { and, eq, inArray } from "drizzle-orm";
 import { CreateDocumentPayload } from "../types";
 import { db } from "./drizzle";
-import { documents } from "./schema";
+import { documents, workspaceToDocuments } from "./schema";
+import { getServerAuthSession } from "../auth";
 
 export const getDocumentById = async (id: string) => {
   try {
@@ -97,21 +98,15 @@ export const handleDocumentFavourites = async ({
   }
 };
 
-export const createDocument = async ({
-  user,
-  workspaceId,
-  collectionId,
-}: CreateDocumentPayload) => {
+export const createDocument = async ({}: CreateDocumentPayload) => {
   try {
+    const session = await getServerAuthSession();
     const document = await db
       .insert(documents)
       .values({
         title: `Untitled Document`,
         content: "",
         markdown: "",
-        authorId: user,
-        workspaceId: workspaceId!,
-        collectionId: collectionId!,
         tags: [],
       })
       .returning();
@@ -119,6 +114,10 @@ export const createDocument = async ({
     if (document.length === 0) {
       throw new Error("Failed to create document");
     }
+    await db.insert(workspaceToDocuments).values({
+      documentId: document[0].id as string,
+      workspaceSlug: session?.user?.activeWorkspace?.slug as string,
+    });
     return { data: document[0], error: null };
   } catch (error) {
     return { data: null, error: (error as Error).message };

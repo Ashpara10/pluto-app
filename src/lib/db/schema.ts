@@ -3,6 +3,7 @@ import {
   boolean,
   customType,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uuid,
@@ -10,8 +11,14 @@ import {
 } from "drizzle-orm/pg-core";
 
 export type AuthProvider = "google" | "github" | "credentials";
+export type Role = "admin" | "member";
 
 const authProvider = customType<{ data: AuthProvider }>({
+  dataType() {
+    return "text";
+  },
+});
+const role = customType<{ data: Role }>({
   dataType() {
     return "text";
   },
@@ -31,12 +38,9 @@ export const users = pgTable("users", {
 
 export const workspaces = pgTable("workspaces", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
-  name: text("name").notNull(),
-  slug: text("slug").unique(),
+  name: varchar("name", { length: 30 }).notNull(),
+  slug: varchar("slug", { length: 40 }).notNull().unique(),
   image: text("image"),
-  user: uuid("user")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
@@ -49,13 +53,6 @@ export const documents = pgTable("documents", {
   tags: text("tags").array().default([]),
   markdown: text("markdown"),
   isFavorite: boolean("is_favorite").default(false),
-  authorId: uuid("author_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  workspaceId: uuid("workspace_id")
-    .notNull()
-    .references(() => workspaces.id, { onDelete: "cascade" }),
-  collectionId: uuid("collection_id").references(() => collections.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
@@ -63,60 +60,76 @@ export const documents = pgTable("documents", {
 
 export const collections = pgTable("collections", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
-  name: text("name"),
-  slug: text("slug"),
+  name: varchar("name", { length: 30 }).notNull(),
+  slug: varchar("slug", { length: 40 }).notNull().unique(),
   tags: text("tags").array().default([]),
-  workspaceId: uuid("workspace_id")
-    .notNull()
-    .references(() => workspaces.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
 });
-export const usersRelations = relations(users, ({ many }) => ({
-  documents: many(documents),
-  workspace: many(workspaces),
-  collections: many(collections),
-}));
 
-export const documentsRelations = relations(documents, ({ one }) => ({
-  user: one(users, {
-    fields: [documents.authorId],
-    references: [users.id],
-  }),
-  collection: one(collections, {
-    fields: [documents.collectionId],
-    references: [collections.id],
-  }),
-  workspace: one(workspaces, {
-    fields: [documents.workspaceId],
-    references: [workspaces.id],
-  }),
-}));
-export const workspaceRelations = relations(workspaces, ({ one, many }) => ({
-  user: one(users, {
-    fields: [workspaces?.user],
-    references: [users.id],
-  }),
-  collections: many(collections),
-}));
+export const usersToWorkspaces = pgTable(
+  "user_to_workspace",
+  {
+    workspaceSlug: varchar("workspace_slug", { length: 40 })
+      .notNull()
+      .references(() => workspaces.slug, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: role("role").notNull().default("member"),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.workspaceSlug, table.userId] }),
+  })
+);
 
-export const collectionRelations = relations(collections, ({ one, many }) => ({
-  workspace: one(workspaces, {
-    fields: [collections?.workspaceId],
-    references: [workspaces.id],
-  }),
-  documents: many(documents),
-  user: one(users, {
-    fields: [collections?.userId],
-    references: [users.id],
-  }),
-}));
+export const workspaceToDocuments = pgTable(
+  "workspace_to_documents",
+  {
+    workspaceSlug: varchar("workspace_slug", { length: 40 })
+      .notNull()
+      .references(() => workspaces.slug, { onDelete: "cascade" }),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.workspaceSlug, table.documentId] }),
+  })
+);
 
-export type User = typeof users.$inferSelect;
+export const workspaceToCollections = pgTable(
+  "workspace_to_collections",
+  {
+    workspaceSlug: varchar("workspace_slug", { length: 40 })
+      .notNull()
+      .references(() => workspaces.slug, { onDelete: "cascade" }),
+    collectionSlug: varchar("collection_slug", { length: 40 })
+      .notNull()
+      .references(() => collections.slug, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.workspaceSlug, table.collectionSlug] }),
+  })
+);
+
+export const collectionToDocuments = pgTable(
+  "collection_to_documents",
+  {
+    collectionSlug: varchar("collection_slug", { length: 40 })
+      .notNull()
+      .references(() => collections.slug, { onDelete: "cascade" }),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.collectionSlug, table.documentId] }),
+  })
+);
+
+type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Document = typeof documents.$inferSelect;
 export type NewDocument = typeof documents.$inferInsert;
