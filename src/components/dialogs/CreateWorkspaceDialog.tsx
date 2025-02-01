@@ -1,7 +1,15 @@
+import { useWorkspaceDialog } from "@/lib/context";
+import { createWorkspace } from "@/lib/db/workspaces";
+import { queryClient } from "@/lib/session-provider";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useMemo } from "react";
+import { Loader } from "lucide-react";
+import Image from "next/image";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,17 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { useWorkspaceDialog } from "@/lib/context";
-import Image from "next/image";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
-import { createWorkspace } from "@/lib/db/workspaces";
-import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import { queryClient } from "@/lib/session-provider";
-import { Loader } from "lucide-react";
 
 const CreateWorkspaceDialogSchema = z.object({
   title: z.string().max(30).min(6),
@@ -33,6 +32,7 @@ const CreateWorkspace = () => {
     register,
     handleSubmit,
     getValues,
+    reset,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof CreateWorkspaceDialogSchema>>({
@@ -41,7 +41,7 @@ const CreateWorkspace = () => {
     },
     resolver: zodResolver(CreateWorkspaceDialogSchema),
   });
-  const { data: user } = useSession();
+
   const values = getValues();
   const watchTitle = watch("title");
 
@@ -70,7 +70,7 @@ const CreateWorkspace = () => {
         </DialogHeader>
         <div className="mt-4 px-8 mb-8">
           <form
-            className="block w-full"
+            className="flex flex-col w-full"
             onSubmit={handleSubmit(async ({ title }) => {
               const { data, error } = await createWorkspace({
                 image: workspaceImage,
@@ -81,6 +81,7 @@ const CreateWorkspace = () => {
                 return;
               }
               toast.success(`Workspace ${data?.name} created successfully`);
+              reset();
               setIsCreateWorkspaceDialogOpen!(false);
               await queryClient.refetchQueries(["get-workspaces"]);
             })}

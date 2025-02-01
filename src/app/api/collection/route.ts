@@ -1,7 +1,13 @@
 import { getServerAuthSession } from "@/lib/auth";
 import { createCollection } from "@/lib/db/collections";
 import { db } from "@/lib/db/drizzle";
-import { Collection, collections, documents } from "@/lib/db/schema";
+import {
+  Collection,
+  collections,
+  collectionToDocuments,
+  documents,
+  workspaceToCollections,
+} from "@/lib/db/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
@@ -19,22 +25,22 @@ export async function GET(req: NextRequest) {
     .select({
       collection: collections,
       documents_count: db.$count(
-        documents,
-        and(
-          eq(documents.collectionId, collections.id),
-          eq(documents.workspaceId, workspace as string),
-          eq(documents.authorId, user?.user?.id as string)
-        )
+        collectionToDocuments,
+        eq(collectionToDocuments.collectionSlug, collections.slug)
       ),
     })
     .from(collections)
-    .where(
-      and(
-        eq(collections?.userId, user?.user?.id as string),
-        eq(collections.workspaceId, workspace as string)
-      )
+    // .where(
+    //   and(
+    //     eq(collections?.userId, user?.user?.id as string),
+    //     eq(collections.workspaceId, workspace as string)
+    //   )
+    // )
+    .innerJoin(
+      workspaceToCollections,
+      eq(workspaceToCollections?.collectionSlug, collections?.slug)
     )
-    .leftJoin(documents, eq(documents?.collectionId, collections?.id))
+    .where(eq(workspaceToCollections?.workspaceSlug, workspace as string))
     .groupBy(collections?.id);
 
   return Response.json({ data: allCollections, error: null }, { status: 201 });
@@ -42,15 +48,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { name, tags, documents }: Collection & { documents?: string[] } =
     await req.json();
-  const user = await getServerAuthSession();
-  const workspace = req.nextUrl.searchParams?.get("workspace");
 
   const resp = await createCollection({
     name: name as string,
     tags: tags as string[],
-    user: user?.user?.id as string,
     documents,
-    workspace: workspace as string,
   });
   if (resp?.error)
     return Response.json({ data: null, error: resp.error }, { status: 400 });

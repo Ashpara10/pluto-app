@@ -11,8 +11,9 @@ import { eq } from "drizzle-orm";
 import { jwtVerify, SignJWT } from "jose";
 import { z } from "zod";
 import { instance } from "./axios";
+import { getCollectionBySlug } from "./db/collections";
 import { db } from "./db/drizzle";
-import { RegisterSchema, SortDocumentBy } from "./types";
+import { RegisterSchema, SortDocumentBy, TGetDocument } from "./types";
 import { getAvatarByUserInitials } from "./utils";
 
 const key = new TextEncoder().encode("532d15e19a1c159dda7474c6c773ff87");
@@ -105,6 +106,10 @@ export const getCollectionDocuments = async ({
   workspace: string;
   sortBy: SortDocumentBy;
 }) => {
+  const { data: collection, error } = await getCollectionBySlug(slug);
+  if (error) {
+    return { data: null, error: error };
+  }
   const { data, status } = await instance.get(`/collection/${slug}`, {
     params: {
       workspace: workspace,
@@ -116,7 +121,7 @@ export const getCollectionDocuments = async ({
   }
 
   return {
-    data: data?.data,
+    data: { documents: data?.data as TGetDocument[], collection: collection },
     error: null,
   };
 };
@@ -136,5 +141,5 @@ export const fetchDocuments = async (
     return { data: null, error: "Failed to fetch documents" };
   }
 
-  return { data: res.data?.documents as Document[], error: null };
+  return { data: res.data?.documents as TGetDocument[], error: null };
 };

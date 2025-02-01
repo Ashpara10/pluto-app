@@ -17,6 +17,8 @@ type DocumentViewOptionsProps = {
   title?: string;
   documentsContainerClassName?: string;
   headerClassName?: string;
+  isCollectionDocumentsPage?: boolean;
+  collectionSlug?: string;
 };
 
 const DocumentViewOptions: FC<DocumentViewOptionsProps> = ({
@@ -24,8 +26,9 @@ const DocumentViewOptions: FC<DocumentViewOptionsProps> = ({
   title,
   documentsContainerClassName,
   headerClassName,
+  isCollectionDocumentsPage = false,
+  collectionSlug,
 }) => {
-  const { data } = useSession();
   const { activeView, setActiveView } = useActiveView();
   const [displayOptions, setDisplayOptions] = useState(false);
   const router = useRouter();
@@ -54,8 +57,9 @@ const DocumentViewOptions: FC<DocumentViewOptionsProps> = ({
             variant={"outline"}
             onClick={async () => {
               const { data: document, error } = await createDocument({
-                user: data?.user?.id as string,
-                workspaceId: workspace as string,
+                collection: isCollectionDocumentsPage
+                  ? (collectionSlug as string)
+                  : undefined,
               });
               if (error) {
                 toast.error("Failed to create document. Please try again.");

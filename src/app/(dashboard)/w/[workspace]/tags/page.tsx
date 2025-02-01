@@ -1,10 +1,6 @@
 "use client";
-import DocumentCardItem from "@/components/documents/DocumentCard";
 import DocumentCardView from "@/components/documents/DocumentCardView";
-import DocumentListItem from "@/components/documents/DocumentList";
-import DocumentListView, {
-  DocumentListViewSkeleton,
-} from "@/components/documents/DocumentListView";
+import DocumentListView from "@/components/documents/DocumentListView";
 import DocumentViewOptions from "@/components/DocumentViewOptions";
 import {
   Accordion,
@@ -12,71 +8,46 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useActiveView } from "@/lib/context";
-import { db } from "@/lib/db/drizzle";
+import { getDocumentsGroupedByTag } from "@/lib/db/documents";
 import { Document } from "@/lib/db/schema";
 import { useWorkspaces } from "@/lib/hooks/use-workspaces";
 import { cn } from "@/lib/utils";
-import { sql } from "drizzle-orm";
 import { useSession } from "next-auth/react";
 import { useQuery } from "react-query";
 
-type TDocumentGroupedByTag = {
-  tag: string;
-  documents: Document[];
-};
-
-const getDocumentsGroupedByTag = async (user: string, workspace: string) => {
-  const docs =
-    await db.execute(sql`SELECT t.tag, json_agg(d.*) AS documents FROM documents d,
-  LATERAL UNNEST(d.tags) AS t(tag) WHERE d.author_id = ${user} AND d.workspace_id=${workspace} GROUP BY t.tag;`);
-  return docs?.rows.map((row) => ({
-    tag: row?.tag,
-    documents: (row?.documents as any[]).map((d) => ({
-      id: d.id,
-      title: d.title,
-      content: d.content,
-      tags: d.tags,
-      markdown: d.markdown,
-      authorId: d.author_id,
-      workspaceId: d.workspace_id,
-      collectionId: d.collection_id,
-      createdAt: d.created_at,
-      updatedAt: d.updated_at,
-      deletedAt: d.deleted_at,
-    })),
-  })) as TDocumentGroupedByTag[];
-};
 const Page = () => {
-  const { data } = useSession();
   const { activeView } = useActiveView();
-  const { currentWorkspace } = useWorkspaces();
-  const { data: docs, isLoading } = useQuery(
-    ["group-documents-by-tags", data?.user?.id, currentWorkspace?.id],
-    () =>
-      getDocumentsGroupedByTag(
-        data?.user?.id as string,
-        currentWorkspace?.id as string
-      )
+  const { data: docs, isLoading } = useQuery(["group-documents-by-tags"], () =>
+    getDocumentsGroupedByTag()
   );
 
+  console.log({ docs });
+  function toUppercase(str: string) {
+    return str
+      .split(" ")
+      .map((word) => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+  }
   return (
-    <section className="w-full flex flex-col items-center justify-center mt-28  ">
+    <section className="w-full flex flex-col items-center justify-center mt-28  mb-28">
       <DocumentViewOptions
         documentsContainerClassName={cn("px-0 w-full", isLoading && "px-2")}
         title="Tags"
       >
         <Accordion type="multiple" className="w-full ">
-          {docs?.map((doc, i) => {
+          {(docs as any[])?.map((doc, i) => {
+            const name = doc.tag.split("-").join(" ");
             return (
               <AccordionItem
                 className="w-full border-y border-neutral-300 dark:border-lightGray/10 py-2"
                 value={`tags-${doc?.tag}`}
                 key={doc.tag}
               >
-                <AccordionTrigger className="text-base border-neutral-300 font-medium dark:border-lightGray/10 px-4 py-3">
-                  {doc.tag}
+                <AccordionTrigger className="text-base border-neutral-300 font-medium dark:border-lightGray/10 px-4 lg:px-6 py-3">
+                  {toUppercase(name)} ({doc?.documents?.length})
                 </AccordionTrigger>
                 <AccordionContent className="data-[state='open']:border-t border-0 border-neutral-300 dark:border-lightGray/10 border-t py-4 px-2 flex flex-col items-center justify-start">
                   {activeView === "list" ? (

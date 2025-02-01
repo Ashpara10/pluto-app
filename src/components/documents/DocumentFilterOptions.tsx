@@ -1,5 +1,13 @@
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { Clock, Grid2x2, LayoutGrid, List, Star } from "lucide-react";
+import {
+  AlarmClock,
+  Calendar,
+  Clock,
+  Grid2x2,
+  LayoutGrid,
+  List,
+  Star,
+} from "lucide-react";
 import { FC, ReactNode } from "react";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -32,12 +40,12 @@ const DocumentFilterOptions: FC<DocumentFilterOptionsProps> = ({
       key: "favourites",
     },
     {
-      icon: <Clock className="size-5 opacity-80" />,
+      icon: <AlarmClock className="size-5 opacity-80" />,
       name: "Created",
       key: "createdAt",
     },
     {
-      icon: <Clock className="size-5 opacity-80" />,
+      icon: <Calendar className="size-5 opacity-80" />,
       name: "Updated",
       key: "updatedAt",
     },

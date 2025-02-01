@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Document } from "./db/schema";
 
 // Workspaces Types
 export type CreateWorkspacePayload = {
@@ -18,6 +19,8 @@ export type CreateCollectionPayload = {
 export type CreateDocumentPayload = {
   title?: string;
   content?: string;
+  markdown?: string;
+  collection?: string;
 };
 
 export type AddDocumentToCollectionPayload = {
@@ -41,6 +44,15 @@ export const RegisterSchema = z.object({
   image: z.string().optional(),
 });
 
+export type TGetDocument = {
+  document: Document;
+  isFavorite: boolean;
+};
+
+export type TGetDocumentsGroupedByTag = {
+  tag: string;
+  documents: TGetDocument[];
+};
 export type TabType = "documents" | "collections" | "tags";
 
 export type SortDocumentBy = "createdAt" | "updatedAt" | "favourites";

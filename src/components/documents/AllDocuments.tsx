@@ -8,7 +8,7 @@ import { useQuery } from "react-query";
 import EmptyDocuments from "../empty-documents";
 import DocumentCardView, { DocumentCardViewSkeleton } from "./DocumentCardView";
 import DocumentListView, { DocumentListViewSkeleton } from "./DocumentListView";
-import { SortDocumentBy } from "@/lib/types";
+import { SortDocumentBy, TGetDocument } from "@/lib/types";
 import { useQueryState } from "nuqs";
 import { useSession } from "next-auth/react";
 
@@ -25,7 +25,7 @@ const AllDocuments: FC<AllDocumentsProps> = ({ workspace }) => {
     refetchOnWindowFocus: false,
   });
   const session = useSession();
-  console.log({ w: session?.data?.user?.activeWorkspace });
+  console.log({ w: session?.data?.user?.activeWorkspace, data });
 
   if (data?.data?.length === 0 && !isFetching) {
     return <EmptyDocuments />;
@@ -40,9 +40,15 @@ const AllDocuments: FC<AllDocumentsProps> = ({ workspace }) => {
   }
 
   return activeView === "grid" ? (
-    <DocumentCardView data={data?.data as Document[]} isLoading={isFetching} />
+    <DocumentCardView
+      data={data?.data as TGetDocument[]}
+      isLoading={isFetching}
+    />
   ) : (
-    <DocumentListView data={data?.data as Document[]} isLoading={isFetching} />
+    <DocumentListView
+      data={data?.data as TGetDocument[]}
+      isLoading={isFetching}
+    />
   );
 };
 

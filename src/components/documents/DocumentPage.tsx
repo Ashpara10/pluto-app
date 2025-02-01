@@ -76,7 +76,7 @@ const DocumentPage: FC<DocumentPageProps> = ({ document }) => {
           onChange={(e) => setData((p) => ({ ...p, title: e.target.value }))}
         />
 
-        <div className="w-full flex mt-1 items-center justify-between mb-4">
+        <div className="w-full flex mt-1 items-end justify-between mb-4">
           <div>
             <span className=" opacity-75">
               {new Date(data?.createdAt as Date).toLocaleDateString("en-US", {

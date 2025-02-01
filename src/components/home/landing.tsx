@@ -121,7 +121,7 @@ const Landing = () => {
             <button
               onClick={() => {
                 if (status === "authenticated" && data?.user?.activeWorkspace) {
-                  router.push(`/w/${data?.user?.activeWorkspace?.id}`);
+                  router.push(`/w/${data?.user?.activeWorkspace?.slug}`);
                   return;
                 } else if (
                   status === "authenticated" &&

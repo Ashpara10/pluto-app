@@ -74,10 +74,7 @@ const FloatingMenu = memo(() => {
       ),
       name: "Create Document",
       onClick: async () => {
-        const { data, error } = await createDocument({
-          user: user?.user?.id as string,
-          workspaceId: user?.user?.activeWorkspace?.id as string,
-        });
+        const { data, error } = await createDocument({});
         if (error) {
           toast?.error(error);
           return;

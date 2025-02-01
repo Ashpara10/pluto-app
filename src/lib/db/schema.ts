@@ -52,7 +52,6 @@ export const documents = pgTable("documents", {
   content: text("content"),
   tags: text("tags").array().default([]),
   markdown: text("markdown"),
-  isFavorite: boolean("is_favorite").default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
@@ -93,6 +92,7 @@ export const workspaceToDocuments = pgTable(
     documentId: uuid("document_id")
       .notNull()
       .references(() => documents.id, { onDelete: "cascade" }),
+    isFavorite: boolean("is_favorite").default(false),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.workspaceSlug, table.documentId] }),
@@ -108,6 +108,7 @@ export const workspaceToCollections = pgTable(
     collectionSlug: varchar("collection_slug", { length: 40 })
       .notNull()
       .references(() => collections.slug, { onDelete: "cascade" }),
+    isFavorite: boolean("is_favorite").default(false),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.workspaceSlug, table.collectionSlug] }),

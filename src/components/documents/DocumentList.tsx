@@ -1,7 +1,7 @@
 "use client";
 import { deleteDocuments } from "@/lib/db/documents";
 import { db } from "@/lib/db/drizzle";
-import { Document, documents } from "@/lib/db/schema";
+import { Document, documents, workspaceToDocuments } from "@/lib/db/schema";
 import { queryClient } from "@/lib/session-provider";
 import { cn } from "@/lib/utils";
 import { eq, not } from "drizzle-orm";
@@ -14,6 +14,7 @@ import { Checkbox } from "../ui/checkbox";
 type DocumentListProps = {
   document: Document;
   checked?: boolean;
+  isFavourite?: boolean;
   handleCheckChange: (checked: boolean, id: string) => void;
 };
 
@@ -21,6 +22,7 @@ const DocumentListItem = ({
   document,
   checked,
   handleCheckChange,
+  isFavourite,
 }: DocumentListProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
@@ -36,17 +38,17 @@ const DocumentListItem = ({
 
   const handleFavourites = async () => {
     // Flip the optimistic state of `isFavorite`
-    const newFavoriteState = !optimisticDocument?.isFavorite;
+    const newFavoriteState = !isFavourite;
     startTransition(async () => {
       try {
         // Optimistically update the state
-        addOptimistic(!optimisticDocument.isFavorite);
+        addOptimistic(!isFavourite);
 
         // Update the server
         await db
-          .update(documents)
-          .set({ isFavorite: not(documents?.isFavorite) })
-          .where(eq(documents.id, optimisticDocument?.id))
+          .update(workspaceToDocuments)
+          .set({ isFavorite: not(workspaceToDocuments.isFavorite) })
+          .where(eq(workspaceToDocuments.documentId, optimisticDocument?.id))
           .returning();
 
         // Notify success
@@ -122,8 +124,7 @@ const DocumentListItem = ({
               strokeWidth={1.07}
               className={cn(
                 "opacity-80 size-5",
-                optimisticDocument?.isFavorite &&
-                  "opacity-100 fill-yellow-400 stroke-yellow-500"
+                isFavourite && "opacity-100 fill-yellow-400 stroke-yellow-500"
               )}
             />
           </button>

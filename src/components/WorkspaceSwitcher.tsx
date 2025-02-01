@@ -22,14 +22,14 @@ const WorkspaceSwitcher = () => {
       <Skeleton className="h-10 w-full animate-pulse rounded-lg bg-neutral-200/60 dark:bg-lightGray/10" />
     );
   const handleWorkspaceClick = async (workspace: Workspace) => {
-    if (workspace?.id === currentWorkspace?.id) return;
+    if (workspace?.slug === currentWorkspace?.slug) return;
     const w = {
       id: workspace?.id,
       name: workspace?.name,
       slug: workspace?.slug,
     };
     await update({ ...data, user: { ...data?.user, activeWorkspace: w } });
-    router.replace(`/w/${workspace?.id}`);
+    router.replace(`/w/${workspace?.slug}`);
   };
   return (
     <Popover>
@@ -50,8 +50,11 @@ const WorkspaceSwitcher = () => {
         </button>
       </PopoverTrigger>
       <PopoverContent
-        style={{ scrollbarWidth: "none" }}
-        className="ml-3  mt-2  w-64 rounded-xl bg-white/70 p-0  shadow-black/30 drop-shadow-xl backdrop-blur-lg dark:bg-neutral-900 overflow-hidden "
+        style={{
+          scrollbarWidth: "none",
+          boxShadow: " 0 17px 23px rgba(0, 0, 0, 0.2)",
+        }}
+        className="ml-3  mt-2  w-64 rounded-xl bg-white/80  p-0   backdrop-blur-lg dark:bg-neutral-800 overflow-hidden "
       >
         <div className="">
           <ScrollArea className=" scrollbar-none flex max-h-52 h-fit flex-col space-y-1 overflow-y-auto p-0">
@@ -64,7 +67,7 @@ const WorkspaceSwitcher = () => {
                     />
                   );
                 })
-              : workspaces?.map((workspace) => {
+              : workspaces?.map(({ workspace }) => {
                   return (
                     <div
                       key={workspace?.id}

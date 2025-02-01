@@ -16,8 +16,16 @@ import { Copy, CopyCheckIcon, FilePlus2, Plus, RefreshCcw } from "lucide-react";
 import { $getSelection } from "lexical";
 import { $generateNodesFromDOM } from "@lexical/html";
 import toast from "react-hot-toast";
+import { createDocument } from "@/lib/db/documents";
+import { queryClient } from "@/lib/session-provider";
+import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
+import { useSession } from "next-auth/react";
 
 const ChatAssistant = () => {
+  const router = useRouter();
+  const [sortBy] = useQueryState("sortBy");
+  const session = useSession();
   const chatInputContainerRef = useRef<HTMLDivElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
   const [mdContext, setMdContext] = useState("");
@@ -77,6 +85,35 @@ const ChatAssistant = () => {
     setTimeout(() => {
       setIsCopied(false);
     }, 2000);
+  };
+
+  const createDocumentFromResponse = async ({
+    content,
+    markdown,
+    title,
+  }: {
+    content: string;
+    markdown: string;
+    title: string;
+  }) => {
+    const doc = await createDocument({
+      content: content,
+      markdown: markdown,
+      title: title,
+    });
+    if (doc?.error) {
+      toast.error(doc.error);
+      return;
+    }
+    toast.success("Document created successfully");
+    await queryClient.refetchQueries([
+      "documents-lists",
+      session?.data?.user?.activeWorkspace?.slug,
+      sortBy,
+    ]);
+    router.push(
+      `${session?.data?.user?.activeWorkspace?.slug}/document/${doc?.data?.id}`
+    );
   };
 
   return (
@@ -147,6 +184,16 @@ const ChatAssistant = () => {
                       )}
                     </Button>
                     <Button
+                      onClick={async () => {
+                        const title = message?.content
+                          .split("\n")[0]
+                          .slice(2, message.content.split("\n")[0].length);
+                        await createDocumentFromResponse({
+                          content: content?.toString(),
+                          markdown: message?.content,
+                          title: title,
+                        });
+                      }}
                       variant={"outline"}
                       size={"smallIcon"}
                       className="cursor-pointer rounded-lg"

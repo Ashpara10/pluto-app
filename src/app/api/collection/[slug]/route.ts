@@ -1,7 +1,13 @@
 import { getServerAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db/drizzle";
-import { collections, Document, documents } from "@/lib/db/schema";
-import { and, eq, SQL, sql } from "drizzle-orm";
+import {
+  collections,
+  collectionToDocuments,
+  Document,
+  documents,
+  workspaceToDocuments,
+} from "@/lib/db/schema";
+import { and, eq, is, SQL, sql } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
 export async function GET(
@@ -15,62 +21,46 @@ export async function GET(
   try {
     const slug = params?.slug;
     const session = await getServerAuthSession();
-    const workspace = req.nextUrl.searchParams?.get("workspace");
     const sortBy = req.nextUrl.searchParams?.get("sortBy");
-    let query: SQL;
+    const filters: SQL[] = [eq(documents.id, workspaceToDocuments.documentId)];
+    if (sortBy === "favourites") {
+      filters.push(eq(workspaceToDocuments.isFavorite, true));
+    }
+
+    let sortDocumentsBy;
     switch (sortBy) {
       case "createdAt":
-        query = sql<
-          Document[]
-        >`json_agg(documents ORDER BY documents."created_at" DESC)`;
+        sortDocumentsBy = documents?.createdAt;
         break;
       case "updatedAt":
-        query = sql<
-          Document[]
-        >`json_agg(documents ORDER BY documents."updated_at" DESC)`;
-        break;
-
-      case "favorites":
-        query = sql<
-          Document[]
-        >`json_agg(documents ORDER BY documents."is_favorite" DESC)`;
+        sortDocumentsBy = documents?.updatedAt;
         break;
 
       default:
-        query = sql<Document[]>`json_agg(documents)`;
+        sortDocumentsBy = documents?.createdAt;
         break;
     }
-    const [collectionDocuments] = await db
+
+    const collectionDocuments = await db
       .select({
-        documents: !sortBy ? sql<Document[]>`json_agg(documents)` : query,
+        document: documents,
+        isFavorite: workspaceToDocuments.isFavorite,
       })
       .from(documents)
-      .where(
-        and(
-          eq(documents.authorId, session?.user.id as string),
-          eq(documents.workspaceId, workspace as string),
-          eq(collections.slug, slug)
-        )
+      .innerJoin(
+        collectionToDocuments,
+        eq(documents.id, collectionToDocuments.documentId)
       )
-      .leftJoin(collections, eq(documents?.collectionId, collections?.id));
-    // .groupBy(collections.id);
+      .innerJoin(workspaceToDocuments, and(...filters))
+      .where(eq(collectionToDocuments.collectionSlug, slug))
+      .orderBy(sortDocumentsBy);
 
-    console.log({ collectionDocuments });
+    console.log({
+      collectionDocuments: collectionDocuments.map((doc) => doc.document),
+    });
     return Response.json(
       {
-        data: (collectionDocuments?.documents as any[])?.map((d) => ({
-          id: d.id,
-          title: d.title,
-          content: d.content,
-          tags: d.tags,
-          markdown: d.markdown,
-          authorId: d.author_id,
-          workspaceId: d.workspace_id,
-          collectionId: d.collection_id,
-          createdAt: d.created_at,
-          updatedAt: d.updated_at,
-          deletedAt: d.deleted_at,
-        })),
+        data: collectionDocuments,
       },
       { status: 201 }
     );

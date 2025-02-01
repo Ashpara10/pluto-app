@@ -23,7 +23,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
-      const newTag = inputValue.trim();
+      const newTag = inputValue.trim().split(" ").join("-").toLocaleLowerCase();
       if (newTag && !tags.includes(newTag)) {
         setTags([...tags, newTag]);
       }

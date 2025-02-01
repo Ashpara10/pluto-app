@@ -1,10 +1,10 @@
 import DocumentViewOptions from "@/components/DocumentViewOptions";
 import { getCollectionDocuments } from "@/lib/actions";
 import { FC } from "react";
-import { Document } from "@/lib/db/schema";
+import { Collection, Document } from "@/lib/db/schema";
 import CollectionDocuments from "@/components/documents/CollectionDocuments";
 import { searchParamsCache } from "@/lib/nuqs";
-import { SortDocumentBy } from "@/lib/types";
+import { SortDocumentBy, TGetDocument } from "@/lib/types";
 type PageProps = {
   params: Promise<{ workspace: string; slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -23,9 +23,15 @@ const Page: FC<PageProps> = async ({ params, searchParams }) => {
   return (
     <div className="flex w-full flex-col items-center justify-center  pt-28 px-4">
       <div className="w-full max-w-7xl">
-        <DocumentViewOptions title={`Documents`}>
+        <DocumentViewOptions
+          title={`${data?.collection?.name} Documents`}
+          isCollectionDocumentsPage={true}
+          collectionSlug={slug}
+        >
           <CollectionDocuments
-            documents={data as Document[]}
+            initialData={
+              data as { documents: TGetDocument[]; collection: Collection }
+            }
             slug={slug}
             workspace={workspace}
           />

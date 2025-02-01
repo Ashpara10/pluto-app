@@ -1,10 +1,9 @@
-import Link from "next/link";
+import { TabType } from "@/lib/types";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import AvatarDropDownMenu from "./AvatarDropDownMenu";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
-import { useEffect, useState } from "react";
-import { TabType } from "@/lib/types";
 
 const Navbar = () => {
   const router = useRouter();

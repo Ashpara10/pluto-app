@@ -4,9 +4,10 @@ import { Document } from "@/lib/db/schema";
 import { FC } from "react";
 import { Skeleton } from "../ui/skeleton";
 import DocumentListItem from "./DocumentList";
+import { TGetDocument } from "@/lib/types";
 
 type DocumentListViewProps = {
-  data: Document[];
+  data: TGetDocument[];
   isLoading: boolean;
 };
 const DocumentListView: FC<DocumentListViewProps> = ({ data }) => {
@@ -25,16 +26,17 @@ const DocumentListView: FC<DocumentListViewProps> = ({ data }) => {
   };
   return (
     <section className="w-full">
-      {data?.map((doc, i) => {
-        const isChecked = selectedDocuments?.includes(doc?.id);
+      {data?.map(({ document, isFavorite }, i) => {
+        const isChecked = selectedDocuments?.includes(document?.id);
         return (
           <DocumentListItem
             key={i}
             checked={isChecked}
+            isFavourite={isFavorite}
             handleCheckChange={(checked) =>
-              handleCheckBoxChange(checked, doc?.id)
+              handleCheckBoxChange(checked, document?.id)
             }
-            document={doc}
+            document={document}
           />
         );
       })}

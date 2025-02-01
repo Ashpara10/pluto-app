@@ -1,14 +1,15 @@
 "use client";
 import { useSelectedDocuments } from "@/lib/context";
-import { Document } from "@/lib/db/schema";
+import { TGetDocument } from "@/lib/types";
 import { FC } from "react";
 import { Skeleton } from "../ui/skeleton";
 import DocumentCardItem from "./DocumentCard";
 
 type DocumentCardViewProps = {
-  data: Document[];
+  data: TGetDocument[];
   isLoading: boolean;
 };
+
 const DocumentCardView: FC<DocumentCardViewProps> = ({ data }) => {
   const { setSelectedDocuments, selectedDocuments } = useSelectedDocuments();
 
@@ -26,15 +27,16 @@ const DocumentCardView: FC<DocumentCardViewProps> = ({ data }) => {
 
   return (
     <section className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 ">
-      {data?.map((doc, i) => {
+      {data?.map(({ document, isFavorite }, i) => {
         return (
           <DocumentCardItem
             key={i}
-            checked={selectedDocuments?.includes(doc?.id)}
+            checked={selectedDocuments?.includes(document?.id)}
             handleCheckChange={(checked) =>
-              handleCheckBoxChange(checked, doc?.id)
+              handleCheckBoxChange(checked, document?.id)
             }
-            document={doc}
+            isFavourite={isFavorite}
+            document={document}
           />
         );
       })}

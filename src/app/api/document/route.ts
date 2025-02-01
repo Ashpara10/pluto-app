@@ -1,14 +1,16 @@
-import { getServerAuthSession } from "@/lib/auth";
 import { db } from "@/lib/db/drizzle";
-import { documents } from "@/lib/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { documents, workspaceToDocuments } from "@/lib/db/schema";
+import { and, desc, eq, SQL } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const sessionData = await getServerAuthSession();
-
   const workspace = req.nextUrl.searchParams?.get("workspace");
   const sortBy = req.nextUrl.searchParams?.get("sortBy");
+  console.log({ sortBy });
+  const filters: SQL[] = [
+    eq(workspaceToDocuments?.workspaceSlug, workspace as string),
+  ];
+
   let sortDocumentsBy;
   switch (sortBy) {
     case "createdAt":
@@ -18,32 +20,34 @@ export async function GET(req: NextRequest) {
       sortDocumentsBy = documents?.updatedAt;
       break;
 
-    case "favorites":
-      sortDocumentsBy = documents?.isFavorite;
+    case "favourites":
+      sortDocumentsBy = workspaceToDocuments?.isFavorite;
       break;
 
     default:
       sortDocumentsBy = documents?.createdAt;
       break;
   }
+  if (sortBy === "favourites") {
+    filters.push(eq(workspaceToDocuments?.isFavorite, true));
+  }
 
   const workspaceDocuments = await db
-    .select()
+    .select({
+      document: documents,
+      isFavorite: workspaceToDocuments?.isFavorite,
+    })
     .from(documents)
-    .where(
-      and(
-        eq(documents?.workspaceId, workspace as string),
-        eq(documents?.authorId, sessionData?.user.id as string)
-      )
+    .innerJoin(
+      workspaceToDocuments,
+      eq(workspaceToDocuments?.documentId, documents?.id)
     )
+    .where(and(...filters))
     .orderBy(desc(sortDocumentsBy));
 
   return Response.json(
     {
-      documents:
-        sortBy === "favourites"
-          ? workspaceDocuments?.filter((d) => d?.isFavorite)
-          : workspaceDocuments,
+      documents: workspaceDocuments,
     },
     { status: 201 }
   );
