@@ -123,7 +123,7 @@ const Register = () => {
           maxLength={50}
           id="name"
           {...register("name")}
-          className="rounded-lg border  border-neutral-300 px-4 py-2  dark:border-lightGray/10 mt-1"
+          className="rounded-lg border  border-neutral-300 px-4 py-2  dark:border-neutral-600 mt-1"
         />
         <label htmlFor="email" className="mt-2 px-1 opacity-80">
           Email
@@ -135,14 +135,14 @@ const Register = () => {
           maxLength={50}
           placeholder="Enter your email"
           {...register("email")}
-          className="rounded-lg border placeholder:text-sm placeholder:font-light border-neutral-300 px-4 py-2  dark:border-lightGray/10 mt-1"
+          className="rounded-lg border placeholder:text-sm placeholder:font-light border-neutral-300 px-4 py-2  dark:border-neutral-600 mt-1"
         />
 
         <label htmlFor="password" className="mt-2 px-1 opacity-80">
           Password
         </label>
 
-        <div className=" flex items-center mt-1 justify-center overflow-hidden rounded-lg border border-neutral-300  dark:border-lightGray/10">
+        <div className=" flex items-center mt-1 justify-center overflow-hidden rounded-lg border border-neutral-300  dark:border-neutral-600">
           <input
             className="w-full px-4 py-2 "
             id="password"

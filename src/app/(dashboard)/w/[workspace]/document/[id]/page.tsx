@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { getDocument } from "./actions";
 import DocumentPage from "@/components/documents/DocumentPage";
 import { Metadata } from "next";
-
+import { $generateHtmlFromNodes } from "@lexical/html";
 type PageProps = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -32,5 +32,8 @@ export default async function Page({ params }: PageProps) {
     toast.error(error);
     return;
   }
+  console.log({ data });
+  // In a headless mode, you need to initialize a headless browser implementation such as JSDom.
+
   return <DocumentPage document={data!} />;
 }

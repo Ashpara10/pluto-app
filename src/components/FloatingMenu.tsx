@@ -280,7 +280,7 @@ const FloatingMenu = memo(() => {
         layoutId={`popover-${uniqueId}`}
         animate={isExpanded ? { opacity: 0 } : { opacity: 1 }}
         transition={{ duration: 0.2, ease: [0.32, 0.72, 0, 1] }}
-        className="bottom-3 z-30 flex min-w-[180px] cursor-pointer items-center justify-between border border-neutral-300 bg-white/80 px-4 py-2 backdrop-blur-lg dark:border-light-dark-border dark:bg-neutral-800/70 drop-shadow-2xl shadow-black/80"
+        className="bottom-3 z-30 flex min-w-[180px] cursor-pointer items-center justify-between border border-neutral-300 bg-white/80 px-4 py-2 backdrop-blur-lg dark:border-[#424242] dark:bg-neutral-800/70 drop-shadow-2xl shadow-black/80"
         style={{
           borderRadius: "24px",
         }}
@@ -293,7 +293,7 @@ const FloatingMenu = memo(() => {
           <motion.div
             ref={ref}
             layoutId={`popover-${uniqueId}`}
-            className="absolute bottom-3 z-30 w-[384px] overflow-hidden border border-neutral-300 bg-white/70 shadow-black/80 drop-shadow-2xl backdrop-blur-lg  dark:border-light-dark-border dark:bg-neutral-800/70"
+            className="absolute bottom-3 z-30 w-[384px] overflow-hidden border border-neutral-300 bg-white/70 shadow-black/80 drop-shadow-2xl backdrop-blur-lg  dark:border-[#424242] dark:bg-neutral-800/70"
             transition={{ duration: 0.36, ease: [0.32, 0.72, 0, 1] }}
             style={{
               borderRadius: "16px",

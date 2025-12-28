@@ -104,11 +104,11 @@ const Login = () => {
 
       <form onSubmit={handleLogin} className="flex w-full  flex-col space-y-2">
         <input
-          className="rounded-lg border  border-neutral-300 px-4 py-2  dark:border-lightGray/10"
+          className="rounded-lg border  border-neutral-300 px-4 py-2  dark:border-neutral-600"
           {...register("email")}
           placeholder="Email"
         />
-        <div className="mt-2 flex items-center justify-center overflow-hidden rounded-lg border border-neutral-300  dark:border-lightGray/10">
+        <div className="mt-2 flex items-center justify-center overflow-hidden rounded-lg border border-neutral-300  dark:border-neutral-600">
           <input
             className="w-full px-4 py-2"
             {...register("password")}

@@ -18,7 +18,7 @@ import type {
 } from "lexical";
 
 import { $applyNodeReplacement, DecoratorNode } from "lexical";
-import { Suspense } from "react";
+import { ReactNode, Suspense } from "react";
 import ImageComponent from "./ImageComponent";
 
 export interface ImagePayload {
@@ -58,7 +58,7 @@ export type SerializedImageNode = Spread<
   SerializedLexicalNode
 >;
 
-export class ImageNode extends DecoratorNode<JSX.Element> {
+export class ImageNode extends DecoratorNode<ReactNode> {
   __src: string;
   __altText: string;
   __width: "inherit" | number;
@@ -167,8 +167,11 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   getAltText(): string {
     return this.__altText;
   }
+  isInline(): false {
+    return false; // 👈 ensures it’s treated as block-level, not inline text inside <p>
+  }
 
-  decorate(): JSX.Element {
+  decorate() {
     return (
       <Suspense fallback={null}>
         <ImageComponent

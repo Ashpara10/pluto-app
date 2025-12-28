@@ -19,6 +19,7 @@ type DocumentViewOptionsProps = {
   headerClassName?: string;
   isCollectionDocumentsPage?: boolean;
   collectionSlug?: string;
+  disabled?: boolean;
 };
 
 const DocumentViewOptions: FC<DocumentViewOptionsProps> = ({
@@ -28,6 +29,7 @@ const DocumentViewOptions: FC<DocumentViewOptionsProps> = ({
   headerClassName,
   isCollectionDocumentsPage = false,
   collectionSlug,
+  disabled = false,
 }) => {
   const { activeView, setActiveView } = useActiveView();
   const [displayOptions, setDisplayOptions] = useState(false);
@@ -40,7 +42,7 @@ const DocumentViewOptions: FC<DocumentViewOptionsProps> = ({
   };
 
   return (
-    <div className="mt-6 block w-full ">
+    <div className="mt-20 block w-full ">
       <div
         className={cn(
           "flex  w-full items-center justify-between px-3",
@@ -54,6 +56,7 @@ const DocumentViewOptions: FC<DocumentViewOptionsProps> = ({
         </div>
         <div className="flex items-center justify-center gap-x-2">
           <Button
+            disabled={disabled}
             variant={"outline"}
             onClick={async () => {
               const { data: document, error } = await createDocument({

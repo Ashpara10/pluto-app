@@ -42,9 +42,9 @@ const AddToCollectionDialog = () => {
     >
       <DialogContent
         style={{ borderRadius: 30 }}
-        className="w-full max-w-3xl h-[70vh] border border-neutral-300/60 dark:border-lightGray/10   p-0 overflow-hidden bg-neutral-50 backdrop-blur-2xl dark:bg-neutral-900 flex flex-col  items-center justify-center"
+        className="w-full max-w-3xl h-[70vh] border border-neutral-300/60 dark:border-neutral-600   p-0 overflow-hidden bg-neutral-50 backdrop-blur-2xl dark:bg-neutral-900 flex flex-col  items-center justify-center"
       >
-        <DialogHeader className="pt-6 h-fit w-full px-4 border-b border-neutral-300/60 dark:border-lightGray/10 pb-4">
+        <DialogHeader className="pt-6 h-fit w-full px-4 border-b border-neutral-300/60 dark:border-neutral-600 pb-4">
           <DialogTitle className="text-lg font-medium">
             Add to Collection
           </DialogTitle>
@@ -97,12 +97,12 @@ const AddToCollectionDialog = () => {
               console.log(selectedDocuments, checkedCollection);
               checkedCollection.map(async (col) => {
                 try {
-                  const data = await db
-                    .update(documents)
-                    .set({ collectionId: col })
-                    .where(inArray(documents.id, selectedDocuments as string[]))
-                    .returning();
-                  console.log(data);
+                  // const data = await db
+                  //   .update(documents)
+                  //   .set({ collectionId: col })
+                  //   .where(inArray(documents.id, selectedDocuments as string[]))
+                  //   .returning();
+                  // console.log(data);
                 } catch (error) {
                   toast.error("Failed to move documents to collection");
                 }

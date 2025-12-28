@@ -47,9 +47,9 @@ const CreateCollectionDialog = () => {
     >
       <DialogContent
         style={{ borderRadius: 30 }}
-        className="w-full border border-neutral-300/60 dark:border-lightGray/10 max-w-md  p-0 overflow-hidden bg-neutral-100 backdrop-blur-2xl dark:bg-neutral-900"
+        className="w-full border border-neutral-300/60 dark:border-neutral-600 max-w-md  p-0 overflow-hidden bg-neutral-100 backdrop-blur-2xl dark:bg-neutral-900"
       >
-        <DialogHeader className=" border-b border-neutral-300/60 dark:border-lightGray/10  px-8 pt-6 pb-4">
+        <DialogHeader className=" border-b border-neutral-300/60 dark:border-neutral-600  px-8 pt-6 pb-4">
           <DialogTitle className="text-xl font-medium tracking-tight leading-tight">
             Create Collection
           </DialogTitle>

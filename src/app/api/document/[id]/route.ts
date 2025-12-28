@@ -1,20 +1,42 @@
 import { db } from "@/lib/db/drizzle";
-import { documents } from "@/lib/db/schema";
-import { and, eq } from "drizzle-orm";
+import { documents, documentTags, tags } from "@/lib/db/schema";
+import { and, eq, getTableColumns, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
+    const { ...rest } = getTableColumns(documents);
     const doc = await db
-      .select()
+      .select({
+        ...rest,
+        tags: sql<Array<{
+          id: string;
+          name: string;
+          metadata: Record<string, any> | null;
+        }> | null>`
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'id', ${tags.id},
+              'name', ${tags.name},
+              'metadata', ${tags.metadata}
+            )
+          ) FILTER (WHERE ${tags.id} IS NOT NULL),
+          '[]'
+        )
+      `,
+      })
       .from(documents)
-      .where(and(eq(documents?.id, id)))
-      .limit(1);
-    // console.log({ doc });
+      .leftJoin(documentTags, eq(documents.id, documentTags.documentId))
+      .leftJoin(tags, eq(documentTags.tagId, tags.id))
+      .where(eq(documents.id, id))
+      .groupBy(documents.id);
+
+    console.log({ doc });
     if (doc.length === 0) {
       throw new Error("Document not found");
     }

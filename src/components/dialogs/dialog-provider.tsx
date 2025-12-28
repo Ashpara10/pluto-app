@@ -5,6 +5,7 @@ import CreateWorkspaceDialog from "./CreateWorkspaceDialog";
 import DeleteDocumentDialog from "./DeleteDocumentDialog";
 import DeleteWorkspaceDialog from "./DeleteWorkspaceDialog";
 import AddToCollectionDialog from "./AddToCollection";
+import SearchDialog from "./SearchDialog";
 
 const DialogProvider = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -15,6 +16,7 @@ const DialogProvider = ({ children }: { children: React.ReactNode }) => {
       <CreateWorkspaceDialog />
       <DeleteDocumentDialog />
       <DeleteWorkspaceDialog />
+      <SearchDialog />
       {children}
     </>
   );

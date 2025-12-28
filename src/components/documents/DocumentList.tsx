@@ -85,7 +85,7 @@ const DocumentListItem = ({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="px-2 rounded-lg cursor-pointer  py-0.5 hover:dark:bg-lightGray/5 hover:bg-neutral-200/60 flex w-full items-center justify-start truncate"
+      className="px-2 rounded-lg cursor-pointer  py-0.5 hover:dark:bg-[#DCDADE]/5 hover:bg-neutral-200/60 flex w-full items-center justify-start truncate"
     >
       <Checkbox
         checked={checked}

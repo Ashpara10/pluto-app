@@ -1,34 +1,23 @@
-import React, { Dispatch, FC, SetStateAction } from "react";
-import TextArea from "react-textarea-autosize";
+import { ArrowUp, CircleStop, Plus, Square } from "lucide-react";
+import React, { Dispatch, FC, SetStateAction, useRef } from "react";
 import { Button } from "../ui/button";
-import {
-  ArrowUp,
-  CircleStop,
-  CornerRightUp,
-  Paperclip,
-  SendHorizonal,
-  Smile,
-} from "lucide-react";
-import { ChatRequestOptions, Message } from "ai";
-
+import { UIMessage } from "ai";
+import { PromptInputTextarea } from "../ai-elements/prompt-input";
+import Textarea from "react-textarea-autosize";
+import { cn } from "@/lib/utils";
 type ChatInputProps = {
-  messages: Message[];
+  messages: UIMessage[];
   reload?: () => void;
   isDone?: boolean;
   input: string;
   stop?: () => void;
-  append?: (m: Message) => void;
+  append?: (m: UIMessage) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  handleSubmit: (
-    event?: {
-      preventDefault?: () => void;
-    },
-    chatRequestOptions?: ChatRequestOptions
-  ) => void;
+  handleSubmit: any;
   isLoading?: boolean;
   isResponseLoading?: boolean;
   setIsResponseLoading?: Dispatch<SetStateAction<boolean>>;
-  setMessages?: (messages: Message[]) => void;
+  setMessages?: (messages: UIMessage[]) => void;
 };
 
 const ChatInput: FC<ChatInputProps> = ({
@@ -38,57 +27,65 @@ const ChatInput: FC<ChatInputProps> = ({
   stop,
   isLoading,
 }) => {
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   return (
     <form
-      className=" flex w-full flex-col items-end justify-center overflow-hidden rounded-2xl border border-neutral-200/80 max-h-[180px] dark:border-lightGray/10 bg-white drop-shadow-2xl shadow-black p-1 dark:bg-neutral-800"
+      onClick={() => textAreaRef.current?.focus()}
       onSubmit={(e) => {
-        // console.log({ input });
-        handleSubmit!(e);
+        e.preventDefault();
+        handleSubmit();
       }}
+      className="w-full shadow-xl py-2 px-2 flex items-end justify-center border border-neutral-300 border-dark-glow overflow-hidden rounded-full"
     >
-      <TextArea
-        value={input}
-        onChange={handleInputChange}
+      <label
+        className={cn(
+          "rounded-full  size-10 flex items-center justify-center border border-neutral-300 border-dark-glow  aspect-square  cursor-pointer "
+          // files.length >= 1 && "opacity-50"
+        )}
+        htmlFor="file-upload"
+      >
+        {/* <input
+          type="file"
+          multiple
+          onChange={handleFileChange}
+          className="hidden"
+          disabled={files.length === 1}
+          id="file-upload"
+        /> */}
+        <Plus />
+      </label>
+
+      <Textarea
+        ref={textAreaRef}
+        id="chat-input"
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            handleSubmit!();
+            handleSubmit();
           }
         }}
-        minRows={3}
-        placeholder="Ask Assistant"
-        className="mt-2 flex h-full w-full placeholder:opacity-50 cursor-pointer resize-none appearance-none border-none bg-transparent px-2 py-2 leading-tight text-opacity-80 focus-visible:outline-none "
+        placeholder="Leave a Message..."
+        className="appearance-none self-center focus-visible:outline-none resize-none w-full px-2 py-2  text-base"
+        value={input}
+        minRows={1}
+        maxRows={1}
+        onChange={handleInputChange}
       />
-      <div className="flex w-full flex-row items-center justify-end px-1.5 pb-1.5">
-        {/* <div className="flex items-center justify-center"> */}
-        {/* <Button
-          type="button"
-          size={"smallIcon"}
-          className="cursor-pointer rounded-xl"
-          variant={"outline"}
-        >
-          <Paperclip className="size-4 opacity-80" />
-        </Button> */}
-        {/* </div> */}
-        <Button
-          type="submit"
-          onClick={() => {
-            if (isLoading) {
-              stop!();
-              return;
-            }
-          }}
-          size={"smallIcon"}
-          className="cursor-pointer rounded-xl"
-          variant={"outline"}
-        >
+
+      <Button
+        variant={"outline"}
+        size={"icon"}
+        disabled={isLoading || input.trim() === ""}
+        className="size-10 bg-neutral-100 p-1  border-neutral-300 rounded-full flex items-center justify-center aspect-square"
+      >
+        <div className="bg-white dark:bg-light-dark border-dark-glow w-full border border-neutral-300 h-full rounded-full flex items-center justify-center">
           {isLoading ? (
-            <CircleStop className="size-4 opacity-80" />
+            <Square className="size-4" />
           ) : (
-            <ArrowUp className="size-4 opacity-80" />
+            <ArrowUp className="size-4" />
           )}
-        </Button>
-      </div>
+        </div>
+      </Button>
     </form>
   );
 };

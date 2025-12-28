@@ -1,11 +1,11 @@
-import { useSidebarOpenContext } from "@/lib/context";
+import { useSearchDialog, useSidebarOpenContext } from "@/lib/context";
 import { ReactNode } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 const GlobalKeybindProvider = ({ children }: { children: ReactNode }) => {
-  const { setSidebarOpen, sidebarOpen } = useSidebarOpenContext();
+  const { isSearchDialogOpen, setIsSearchDialogOpen } = useSearchDialog();
   useHotkeys("ctrl+b", () => {
-    setSidebarOpen(!sidebarOpen);
+    setIsSearchDialogOpen!(!isSearchDialogOpen);
   });
   return children;
 };

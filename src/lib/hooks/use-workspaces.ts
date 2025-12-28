@@ -1,13 +1,13 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { cache, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import { Workspace } from "../db/schema";
 import { getUserWorkspaces, getWorkspaceBySlug } from "../db/workspaces";
 
-const cachedGetUserWorkspaces = async () => getUserWorkspaces();
+const cachedGetUserWorkspaces = cache(async () => getUserWorkspaces());
 export const useWorkspaces = () => {
   const { data: user, update } = useSession();
   const router = useRouter();

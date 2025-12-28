@@ -73,7 +73,7 @@ function LazyImage({
   src: string;
 
   onError: () => void;
-}): JSX.Element {
+}) {
   useSuspenseImage(src);
   return (
     <NextImage
@@ -124,7 +124,7 @@ export default function ImageComponent({
   src: string;
   width: "inherit" | number;
   captionsEnabled?: boolean;
-}): JSX.Element {
+}) {
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isSelected, setSelected, clearSelection] =
@@ -368,8 +368,8 @@ export default function ImageComponent({
         <div
           draggable={draggable}
           className={cn(
-            "group relative mt-3 flex w-full items-center justify-center overflow-hidden rounded-lg ",
-            isFocused && "border-2 border-dashed border-blue-600 "
+            "group relative mt-3 flex w-full items-center justify-center overflow-hidden rounded-lg cursor-pointer border-2  border-dashed border-neutral-200 dark:border-dark-glow ",
+            isFocused && " border-sky-500 "
           )}
         >
           <LazyImage

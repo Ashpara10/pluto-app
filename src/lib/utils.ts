@@ -2,11 +2,29 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { instance } from "./axios";
 import { createHash } from "crypto";
+import { decode, encode } from "gpt-tokenizer";
 
 export const key = new TextEncoder().encode(process?.env.JWT_SECRET);
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function chunkText(
+  text: string,
+  maxTokens = 500,
+  overlap = 50
+): string[] {
+  const tokens = encode(text);
+  const chunks: string[] = [];
+
+  for (let i = 0; i < tokens.length; i += maxTokens - overlap) {
+    const chunkTokens = tokens.slice(i, i + maxTokens);
+    const chunk = decode(chunkTokens); // turn tokens back into string
+    chunks.push(chunk);
+  }
+
+  return chunks;
 }
 
 export async function getArticleDataByURL(url: string) {

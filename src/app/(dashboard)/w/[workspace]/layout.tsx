@@ -1,3 +1,4 @@
+import DashboardLayout from "@/components/DashboardLayout";
 import GlobalLayout from "@/components/GlobalLayout";
 import Protect from "@/components/Protect";
 import Providers from "@/lib/providers";

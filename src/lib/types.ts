@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Document } from "./db/schema";
+import { Document, tags } from "./db/schema";
 
 // Workspaces Types
 export type CreateWorkspacePayload = {
@@ -56,3 +56,12 @@ export type TGetDocumentsGroupedByTag = {
 export type TabType = "documents" | "collections" | "tags";
 
 export type SortDocumentBy = "createdAt" | "updatedAt" | "favourites";
+export type GetDocumentWithTags = Document & {
+  tags: Array<{
+    id: string;
+    name: string;
+    metadata: Record<string, any> | null;
+  }>;
+};
+
+export type TTag = typeof tags.$inferSelect;

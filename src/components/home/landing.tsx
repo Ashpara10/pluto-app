@@ -1,12 +1,22 @@
 "use client";
-import { motion, Variants } from "framer-motion";
-import { ChevronRight, Moon, Sun } from "lucide-react";
+import {
+  motion,
+  MotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+  Variants,
+} from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import AnimatedTitle from "../AnimatedTitle";
-
+import { useRef } from "react";
+import { Button } from "../ui/button";
+import payload from "./data.json";
+import DocumentCardItem from "../documents/DocumentCard";
+import { Document } from "@/lib/db/schema";
+import DocumentViewOptions from "../DocumentViewOptions";
+import Image from "next/image";
 const gradientVariants: Variants = {
   initial: {
     opacity: 0,
@@ -43,169 +53,173 @@ const imageVariants: Variants = {
     },
   },
 };
+const positions = [
+  { x: -100, y: -300, scale: 0.8, z: 1, rotate: -6 }, // latte
+  { x: -100, y: -600, scale: 0.8, z: 1, rotate: 6 }, //dog
+  { x: 0, y: -200, scale: 0.8, z: 1, rotate: -6 }, //drake
+  { x: 180, y: -200, scale: 0.8, z: 6, rotate: -4 }, //cliff
+  { x: 180, y: -200, scale: 0.8, z: 4, rotate: -6 }, //plane
+];
 
-const Landing = () => {
+type LandingProps = {
+  scrollYProgress: MotionValue<number>;
+};
+
+const Landing = ({ scrollYProgress }: LandingProps) => {
   const { status, data } = useSession();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
-  const toggleTheme = [
-    {
-      id: "light",
-      name: "Light-Theme-Button",
-      icon: (
-        <Sun className="size-4 dark:stroke-white stroke-black  opacity-80" />
-      ),
-    },
-    {
-      id: "dark",
-      name: "Dark-Theme-Button",
-      icon: (
-        <Moon className="size-4 dark:stroke-white stroke-black  opacity-80" />
-      ),
-    },
-  ];
 
   return (
     <section
       id="hero"
-      className="w-full h-full relative  flex flex-col items-center justify-center"
+      className="w-full h-full overflow-x-hidden flex flex-col items-center justify-center"
     >
       <motion.div
         variants={gradientVariants}
         initial="initial"
         animate="animate"
-        className="absolute  w-full h-screen bottom-0 -z-10  items-center  bg-gradient-to-t from-indigo-600 via-indigo-500 to-indigo-300"
+        className="absolute w-full h-screen bottom-0 -z-10  items-center  bg-gradient-to-t from-indigo-600 via-indigo-500 to-indigo-400"
       />
-      <div className="w-full md:max-w-5xl xl:max-w-7xl mt-14 md:mb-10 min-h-screen flex flex-col items-center justify-center ">
-        <div className=" w-full md:max-w-5xl flex flex-col items-center justify-center px-4 md:px-0">
-          <motion.div
-            initial={{
-              y: 100,
-              opacity: 0,
-              scale: 0.8,
-            }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            transition={{
-              duration: 1,
-              ease: [0.2, 0.65, 0.3, 0.9],
-              type: "spring",
-            }}
-            className="mb-8 md:mb-10 lg:mb-12 xl:mb-16"
-          >
-            <Image
-              src={"/landing/logo.svg"}
-              width={50}
-              height={50}
-              className="aspect-square size-10 md:size-12 lg:size-16  rounded-xl"
-              priority
-              alt="Pluto logo"
-            />
-          </motion.div>
-          <h2 className="w-full flex flex-col items-center  justify-center text-2xl lg:text-4xl md:leading-snug xl:text-6xl tracking-tight relative leading-tight font-medium md:font-medium">
-            <AnimatedTitle text={"Create & Write Content"} />
-            <AnimatedTitle text={"with AI-Powered Intelligent Tools"} />
-          </h2>
-          <AnimatedTitle
-            className="w-full text-sm sm:text-base md:text-lg text-center flex  items-center justify-center leading-tight text-neutral-800 dark:text-neutral-100/80 mt-4 whitespace-pre-wrap max-w-sm md:max-w-xl"
-            text={
-              "Effortless document management meets AI-powered chat—Pluto revolutionizes the way you create, organize, and collaborate."
-            }
-          />
+      <div className=" w-full md:mt-[160px] md:max-w-5xl flex flex-col items-center justify-center px-4 md:px-0">
+        <h2 className="text-center dark:text-neutral-50 text-4xl font-medium tracking-tighter  ">
+          Create & Write Content <br /> with{" "}
+          <span className="font-thin font-instrument ">AI-Powered</span>{" "}
+          Intelligent Tools
+        </h2>
+        <p className="text-xl tracking-tight text-center mt-6 text-neutral-200">
+          Your brain’s a thinker, not a filing cabinet. Let <br /> your thoughts
+          rest somewhere better.
+          {/* Effortless document management meets AI-powered chat <br />
+          Pluto revolutionizes the way you create, organize, and collaborate. */}
+        </p>
 
-          <motion.div
-            variants={imageVariants}
-            initial="initial"
-            animate="animate"
-            className="mt-4 space-x-3"
-          >
-            <button
-              onClick={() => {
-                if (status === "authenticated" && data?.user?.activeWorkspace) {
-                  router.push(`/w/${data?.user?.activeWorkspace?.slug}`);
-                  return;
-                } else if (
-                  status === "authenticated" &&
-                  !data?.user?.activeWorkspace
-                ) {
-                  router.push("/workspace");
-                  return;
-                }
-                router.push("/login");
-              }}
-              className="pl-8 pr-6 font-medium tracking-normal dark:text-black text-white hover:text-white/80 bg-black dark:bg-white  flex items-center justify-center py-2 text-sm md:text-base transition-all rounded-xl  "
-            >
-              {status === "authenticated"
-                ? "Dashboard"
-                : "Get Started for free"}
-              <ChevronRight className="ml-2 size-4 opacity-80" />
-            </button>
-          </motion.div>
-        </div>
-        <motion.div
-          variants={imageVariants}
-          initial="initial"
-          animate="animate"
-          style={{ filter: "drop-shadow(4px 34px 24px #000000bb)" }}
-          className=" w-full relative md:max-w-5xl mt-8 p-3 flex flex-col items-center justify-center "
+        <Button
+          className="mt-6 dark:bg-black hover:dark:bg-neutral-900 hover:dark:text-neutral-300 dark:text-neutral-50 text-lg rounded-3xl px-10 h-12"
+          // variant={"outline"}
+          onClick={() => {
+            if (status === "authenticated" && data?.user?.activeWorkspace) {
+              router.push(`/w/${data?.user?.activeWorkspace?.slug}`);
+              return;
+            } else if (
+              status === "authenticated" &&
+              !data?.user?.activeWorkspace
+            ) {
+              router.push("/workspace");
+              return;
+            }
+            router.push("/login");
+          }}
         >
-          {theme === "dark" ? (
-            <Image
-              src={"/landing/light-mode-chat.png"}
-              width={1400}
-              quality={100}
-              height={1250}
-              priority
-              className="w-full h-full flex rounded-xl "
-              alt="Pluto app interface showing a document editor with a clean, minimal design"
-            />
-          ) : (
-            <Image
-              src={"/landing/dark-mode-chat.png"}
-              width={1400}
-              quality={100}
-              height={1250}
-              priority
-              className="w-full h-full flex rounded-xl "
-              alt="Pluto app interface showing a document editor with a clean, minimal design"
-            />
-          )}
-          {/* <Image
-            src={"/landing/mobile-2.png"}
-            width={1200}
-            quality={100}
-            height={1000}
-            className="scale-90 rounded-xl md:hidden"
-            alt="Pluto app interface showing a document editor with a clean, minimal design"
-          /> */}
-        </motion.div>
-        <div className="max-w-5xl w-full flex items-center justify-center mt-8 px-3">
-          <motion.div
-            layout
-            className="w-fit overflow-hidden px-1 py-1 scale-90 md:scale-100 flex gap-2 items-center bg-neutral-200 dark:bg-neutral-800 justify-center relative rounded-xl"
-          >
-            {toggleTheme.map((t) => {
-              return (
-                <>
-                  <button
-                    key={t?.id}
-                    onClick={() => setTheme(t?.id)}
-                    className="relative p-2 aspect-square  flex items-center justify-center"
-                  >
-                    {t?.icon}
-                    {theme === t?.id && (
-                      <motion.div
-                        layoutId="theme-toggle"
-                        className="absolute inset-0 z-10 rounded-lg mix-blend-difference bg-black"
-                      />
-                    )}
-                  </button>
-                </>
-              );
-            })}
-          </motion.div>
-        </div>
+          {status === "authenticated" ? "Dashboard" : "Get Started"}
+          {/* <ChevronRight className="ml-2 size-4 opacity-80" /> */}
+        </Button>
       </div>
+      <div className="w-full  relative mt-24 ">
+        <div className="md:max-w-5xl max-w-md h-[360px] relative rounded-2xl overflow-hidden w-full border dark:border-[#DCDADE]/10 border-neutral-200 mx-auto md:h-[600px]">
+          <Image
+            fill
+            src={"/preview.png"}
+            style={{ objectFit: "cover" }}
+            alt=""
+          />
+        </div>
+        {/* <div className="size-[400px] bg-indigo-600 rounded-full blur-[200px] absolute left-10 bottom-14" />
+        <div className="size-[400px] bg-pink-600 rounded-full blur-[200px] absolute right-10 top-42" /> */}
+        {/* <div className="max-w-6xl mx-auto sticky top-20 rounded-3xl flex items-center justify-center py-5 px-8 bg-neutral-900 shadow-2xl border border-neutral-800 mt-[400px] w-full ">
+          <div className=" w-full">
+            <DocumentViewOptions disabled={true} title="All Documents">
+              <div className="columns-4 w-full  gap-4">
+                {payload?.documents?.slice(0, 4)?.map((document, i) => {
+                  return (
+                    <FloatingDocumentCard
+                      index={i}
+                      key={i}
+                      document={document as any}
+                      scrollYProgress={scrollYProgress}
+                    />
+                  );
+                })}
+              </div>
+            </DocumentViewOptions>
+          </div>
+        </div> */}
+      </div>
+      {/* <motion.div className=" w-full md:max-w-5xl aspect-square max-h-[70dvh] mt-8 px-6 flex flex-col items-center justify-center  overflow-hidden rounded-2xl relative">
+        <img
+          style={{ objectFit: "fill" }}
+          className="absolute inset-0 z-[-1] w-full h-full "
+          src="https://i.pinimg.com/1200x/89/95/61/899561a11244a5bc9939beadd03349a7.jpg"
+          alt=""
+        />
+        <motion.div
+          style={{ filter: "drop-shadow(4px 34px 24px #000000bb)" }}
+          className=" w-full h-[80vh] bg-neutral-200 border border-neutral-200 px-3 rounded-t-3xl overflow-hidden "
+        >
+          <div className="w-full px-2 flex gap-x-1 py-2  items-center justify-start">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="size-4 bg-neutral-300 rounded-full "
+              />
+            ))}
+          </div>
+          <div className="bg-neutral-50 border border-neutral-200 w-full h-full rounded-t-2xl overflow-hidden"></div>
+        </motion.div>
+
+     
+      </motion.div> */}
+
+      {/* </div> */}
     </section>
+  );
+};
+
+const FloatingDocumentCard = ({
+  document,
+  scrollYProgress,
+  index,
+}: {
+  document: Document;
+  scrollYProgress: MotionValue<number>;
+  index: number;
+}) => {
+  const x = useTransform(
+    scrollYProgress,
+    [0.5, 0.86],
+    [positions[index]?.x, 0]
+  );
+  const y = useTransform(scrollYProgress, [0.5, 0.86], [-400, 0]);
+  const scale = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    [positions[index]?.scale, 1, 1]
+  );
+  const rotate = useTransform(
+    scrollYProgress,
+    [0.4, 0.7, 0.86],
+    [positions[index]?.rotate, positions[index]?.rotate - 2, 0]
+  );
+
+  return (
+    <motion.div
+      style={{
+        rotate: rotate,
+        y,
+        // scale: scale,
+      }}
+      transition={{
+        duration: 0.9,
+        ease: [0.6, 0.05, -0.01, 0.9],
+      }}
+      className="mt-3  first:mt-0 break-inside-avoid"
+    >
+      <DocumentCardItem
+        document={document as any}
+        handleCheckChange={() => { }}
+        checked={false}
+        isFavourite={false}
+      />
+    </motion.div>
   );
 };
 

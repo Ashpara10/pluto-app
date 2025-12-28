@@ -1,3 +1,4 @@
+import type { ElementTransformer } from "@lexical/markdown";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -5,7 +6,7 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { EditorThemeClasses } from "lexical";
 import AssistantNode from "./nodes/AssistantNode";
-import { ImageNode } from "./nodes/ImageNode";
+import { $createImageNode, $isImageNode, ImageNode } from "./nodes/ImageNode";
 
 export const theme: EditorThemeClasses = {
   ltr: "ltr",
@@ -104,7 +105,7 @@ export const nodes = [
   LinkNode,
   CodeNode,
   ImageNode,
-  AssistantNode,
+  // AssistantNode,
 ];
 
 export const value = {
@@ -174,4 +175,20 @@ export const value = {
     type: "root",
     version: 1,
   },
+};
+
+export const IMAGE_TRANSFORMER: ElementTransformer = {
+  type: "element",
+  regExp: /!\[(.*?)\]\((.*?)\)/, // standard markdown image
+  replace: (parentNode, _children, match) => {
+    const [, alt, src] = match;
+    parentNode.append($createImageNode({ src, altText: alt }));
+  },
+  export: (node) => {
+    if ($isImageNode(node)) {
+      return `![${node.getAltText()}](${node.getSrc()})`;
+    }
+    return null;
+  },
+  dependencies: [ImageNode],
 };

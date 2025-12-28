@@ -57,9 +57,9 @@ const CreateWorkspace = () => {
     >
       <DialogContent
         style={{ borderRadius: 30 }}
-        className="w-full border border-neutral-300/60 dark:border-lightGray/10 max-w-md  p-0 overflow-hidden bg-neutral-100 backdrop-blur-2xl dark:bg-neutral-900"
+        className="w-full border border-neutral-300/60 dark:border-neutral-600 max-w-md  p-0 overflow-hidden bg-neutral-100 backdrop-blur-2xl dark:bg-neutral-900"
       >
-        <DialogHeader className=" border-b border-neutral-300/60 dark:border-lightGray/10  px-8 pt-6 pb-4">
+        <DialogHeader className=" border-b border-neutral-300/60 dark:border-neutral-600  px-8 pt-6 pb-4">
           <DialogTitle className="text-xl font-medium tracking-tight leading-tight">
             Create Workspace
           </DialogTitle>
@@ -103,7 +103,7 @@ const CreateWorkspace = () => {
               <Input
                 placeholder="Set Workspace name"
                 className={cn(
-                  "mt-1 placeholder:text-xs placeholder:opacity-70 bg-neutral-200 dark:bg-neutral-950/30 border border-neutral-300/60 dark:border-lightGray/10",
+                  "mt-1 placeholder:text-xs placeholder:opacity-70 bg-neutral-200 dark:bg-neutral-950/30 border border-neutral-300/60 dark:border-neutral-600",
                   errors?.title && "focus-visible:ring-red-600/70"
                 )}
                 {...register("title")}

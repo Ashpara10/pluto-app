@@ -12,10 +12,11 @@ import {
   ReactNode,
   SetStateAction,
   useContext,
+  useRef,
   useState,
 } from "react";
 import AppContextProvider from "./context";
-
+import { ReactLenis } from "@studio-freight/react-lenis";
 export const editorConfig: InitialConfigType = {
   namespace: "editor",
   theme: theme,

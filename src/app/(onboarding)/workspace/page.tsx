@@ -43,7 +43,7 @@ const Page = () => {
                   key={i}
                   prefetch={true}
                   href={`/w/${workspace?.slug}`}
-                  className="w-full flex items-start justify-between rounded-lg border border-neutral-300/60 p-3 dark:border-lightGray/10 cursor-pointer "
+                  className="w-full flex items-start justify-between rounded-lg border border-neutral-300/60 p-3 border-dark-glow cursor-pointer "
                 >
                   <div onClick={() => handleWorkspaceClick(workspace)}>
                     <span>{workspace?.name}</span>
@@ -77,7 +77,7 @@ export default Page;
 
 const FormWrapper = () => {
   return (
-    <div className="h-[240px] w-full max-w-sm rounded-lg border border-neutral-300/60 dark:border-lightGray/10">
+    <div className="h-[240px] w-full max-w-sm rounded-lg border border-neutral-300/60 dark:border-neutral-600">
       <CreateWorkspace />
     </div>
   );

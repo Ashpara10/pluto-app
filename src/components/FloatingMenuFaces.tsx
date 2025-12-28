@@ -3,21 +3,28 @@ import {
   useDeleteDocumentDialog,
   useSelectedDocuments,
 } from "@/lib/context";
+import { useWorkspaces } from "@/lib/hooks/use-workspaces";
+import { TGetDocument } from "@/lib/types";
 import {
   Command,
-  Folder,
+  Sparkle,
   Sparkles,
   SquareArrowOutUpRight,
   Trash2,
   X,
 } from "lucide-react";
-import { ReactNode } from "react";
+import { useQueryState } from "nuqs";
+import { ReactNode, useMemo } from "react";
+import { useQueryClient } from "react-query";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { instance } from "@/lib/axios";
+import { chunkMarkdown } from "@/lib/embeddings";
+import { generateEmbedding } from "@/lib/db/documents";
 
 export const KeyboardItem = ({
   icon,
@@ -60,17 +67,41 @@ export const DefaultFloatingMenuFace = () => {
 };
 
 export const SelectedDocumentsMenuFace = () => {
+  const { currentWorkspace } = useWorkspaces();
+  const [sortBy] = useQueryState("sortBy");
   const { selectedDocuments, setSelectedDocuments } = useSelectedDocuments();
   const { isAddToCollectionDialogOpen, setIsAddToCollectionDialogOpen } =
     useAddToCollection();
   const { setIsDeleteDocumentDialogOpen } = useDeleteDocumentDialog();
+
+  const queryClient = useQueryClient();
+
+  const selectedDocumentsData = useMemo(() => {
+    const data = queryClient.getQueryData<TGetDocument[]>([
+      "documents-lists",
+      currentWorkspace?.slug,
+      sortBy,
+    ]);
+
+    if (data?.length === 0) return [];
+
+    return (
+      data
+        ?.filter((document) =>
+          selectedDocuments?.includes(document.document.id)
+        )
+        .map((document) => document.document) || []
+    );
+  }, [queryClient, currentWorkspace?.slug, sortBy, selectedDocuments]);
+
+  console.log({ selectedDocumentsData });
 
   return (
     <div className="flex w-full items-center justify-between">
       <span className="flex items-center justify-start gap-x-1">
         <span
           onClick={() => setSelectedDocuments!([])}
-          className="mr-2 rounded-lg border border-darkGray/80 bg-transparent p-1.5 dark:border-light-dark-border"
+          className="mr-2 rounded-lg border border-darkGray/80 bg-transparent p-1.5 dark:border-[#424242]"
         >
           <X className="size-4 opacity-80" />
         </span>
@@ -81,8 +112,24 @@ export const SelectedDocumentsMenuFace = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger
+              onClick={async () => {
+                console.log({ doc: selectedDocumentsData[0] });
+                await generateEmbedding(
+                  selectedDocumentsData[0]?.markdown || "",
+                  selectedDocumentsData[0]?.id || ""
+                );
+              }}
+              className=" rounded-lg border border-darkGray/80 bg-transparent p-1.5 dark:border-[#424242]"
+            >
+              <Sparkle className="size-4 opacity-80" />
+            </TooltipTrigger>
+            <TooltipContent>Chat with documents</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger
               onClick={() => setIsAddToCollectionDialogOpen!(true)}
-              className=" rounded-lg border border-darkGray/80 bg-transparent p-1.5 dark:border-light-dark-border"
+              className=" rounded-lg border border-darkGray/80 bg-transparent p-1.5 dark:border-[#424242]"
             >
               <SquareArrowOutUpRight className="size-4 opacity-80" />
             </TooltipTrigger>
@@ -91,7 +138,7 @@ export const SelectedDocumentsMenuFace = () => {
           <Tooltip>
             <TooltipTrigger
               onClick={() => setIsDeleteDocumentDialogOpen!(true)}
-              className=" rounded-lg border border-darkGray/80 bg-transparent p-1.5 dark:border-light-dark-border"
+              className=" rounded-lg border border-darkGray/80 bg-transparent p-1.5 dark:border-[#424242]"
             >
               <Trash2 className="size-4 opacity-80" />
             </TooltipTrigger>

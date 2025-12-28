@@ -55,7 +55,7 @@ const Navbar = () => {
             value={activeTab}
             onValueChange={(tab) => setActiveTab(tab as TabType)}
           >
-            <TabsList className="rounded-lg bg-neutral-200/60 dark:bg-lightGray/10">
+            <TabsList className="rounded-lg bg-neutral-200/60 dark:bg-[#DCDADE]/10">
               {links.map((link, i) => {
                 return (
                   <TabsTrigger

@@ -18,7 +18,7 @@ export const RenderOptionList: FC<MenuSlideProps> = ({ options }) => {
       <motion.li
         key={index}
         onClick={option.onClick}
-        className="flex cursor-pointer items-center justify-between border-t border-neutral-300 px-4 py-1.5 first:border-none dark:border-light-dark-border"
+        className="flex cursor-pointer items-center justify-between border-t border-neutral-300 px-4 py-1.5 first:border-none dark:border-[#424242]"
       >
         <div className="flex items-center justify-start">
           {option?.icon}
@@ -38,7 +38,7 @@ export const DefaultMenuSlide: FC<MenuSlideProps> = ({ options }) => {
           <motion.li
             key={index}
             onClick={option.onClick}
-            className="flex cursor-pointer items-center justify-between border-t border-neutral-300 px-4 py-1.5 first:border-none dark:border-light-dark-border"
+            className="flex cursor-pointer items-center justify-between border-t border-neutral-300 px-4 py-1.5 first:border-none dark:border-[#424242]"
           >
             <div className="flex items-center justify-start">
               {option?.icon}
@@ -60,7 +60,7 @@ export const DocumentMenuSlide: FC<MenuSlideProps> = ({ options }) => {
           <motion.li
             key={index}
             onClick={option.onClick}
-            className="flex cursor-pointer items-center justify-between border-t border-neutral-300 px-4 py-1.5 first:border-none dark:border-light-dark-border"
+            className="flex cursor-pointer items-center justify-between border-t border-neutral-300 px-4 py-1.5 first:border-none dark:border-[#424242]"
           >
             <div className="flex items-center justify-start">
               {option?.icon}

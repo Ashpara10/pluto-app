@@ -1,13 +1,16 @@
-import { relations } from "drizzle-orm";
 import {
   boolean,
   customType,
+  integer,
+  jsonb,
   pgTable,
   primaryKey,
   text,
   timestamp,
+  unique,
   uuid,
   varchar,
+  vector,
 } from "drizzle-orm/pg-core";
 
 export type AuthProvider = "google" | "github" | "credentials";
@@ -50,22 +53,65 @@ export const documents = pgTable("documents", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   title: text("title"),
   content: text("content"),
-  tags: text("tags").array().default([]),
   markdown: text("markdown"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
 });
 
+export const tags = pgTable("tags", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  metadata: jsonb("metadata").$type<{
+    [key: string]: any;
+  }>(),
+  workspaceSlug: varchar("workspace_slug", { length: 40 })
+    .notNull()
+    .references(() => workspaces.slug, { onDelete: "cascade" }),
+  createdBy: uuid("created_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const documentTags = pgTable(
+  "document_tags",
+  {
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    tagId: uuid("tag_id")
+      .notNull()
+      .references(() => tags.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.documentId, t.tagId] }),
+  })
+);
 export const collections = pgTable("collections", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   name: varchar("name", { length: 30 }).notNull(),
   slug: varchar("slug", { length: 40 }).notNull().unique(),
-  tags: text("tags").array().default([]),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
 });
+
+// Collections ↔ Tags
+export const collectionTags = pgTable(
+  "collection_tags",
+  {
+    collectionId: uuid("collection_id")
+      .notNull()
+      .references(() => collections.id, { onDelete: "cascade" }),
+    tagId: uuid("tag_id")
+      .notNull()
+      .references(() => tags.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.collectionId, t.tagId] }),
+  })
+);
 
 export const usersToWorkspaces = pgTable(
   "user_to_workspace",
@@ -130,6 +176,27 @@ export const collectionToDocuments = pgTable(
   })
 );
 
+// Embeddings table for RAG
+export const documentEmbeddings = pgTable(
+  "document_embeddings",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    embedding: vector("embedding", { dimensions: 768 }),
+    chunk: text("chunk"),
+    chunkIndex: integer("chunk_index").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    uniqueDocumentChunk: unique("unique_document_chunk").on(
+      table.documentId,
+      table.chunkIndex
+    ),
+  })
+);
+
 type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Document = typeof documents.$inferSelect;
@@ -138,3 +205,5 @@ export type Collection = typeof collections.$inferSelect;
 export type NewCollection = typeof collections.$inferInsert;
 export type Workspace = typeof workspaces.$inferSelect;
 export type NewWorkspace = typeof workspaces.$inferInsert;
+export type DocumentEmbedding = typeof documentEmbeddings.$inferSelect;
+export type NewDocumentEmbedding = typeof documentEmbeddings.$inferInsert;

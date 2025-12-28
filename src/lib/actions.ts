@@ -136,6 +136,9 @@ export const fetchDocuments = async (
       workspace: workspace,
       sortBy: sortBy,
     },
+    fetchOptions: {
+      cache: "force-cache",
+    },
   });
   if (!res?.data) {
     return { data: null, error: "Failed to fetch documents" };

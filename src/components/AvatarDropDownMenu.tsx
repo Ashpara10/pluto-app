@@ -75,7 +75,7 @@ const AvatarDropDownMenu = memo(function AvatarDropDownMenu() {
           isLoading={status === "loading"}
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className=" translate-y-2 p-0 rounded-xl border  border-neutral-200/60 dark:border-lightGray/10 bg-white/70 shadow-black/10 dark:shadow-black/30 drop-shadow-xl backdrop-blur-lg dark:bg-neutral-900 w-full max-w-sm -translate-x-3">
+      <DropdownMenuContent className=" translate-y-2 p-0 rounded-xl border  border-neutral-200/60 dark:border-neutral-600 bg-white/70 shadow-black/10 dark:shadow-black/30 drop-shadow-xl backdrop-blur-lg dark:bg-neutral-900 w-full max-w-sm -translate-x-3">
         <div className="w-full flex px-3 py-4 flex-col items-start justify-center">
           <span className="text-sm font-medium">{user?.user?.name}</span>
           <span className="text-sm line-clamp-1 opacity-75 w-full">
@@ -87,7 +87,7 @@ const AvatarDropDownMenu = memo(function AvatarDropDownMenu() {
             <DropdownMenuItem
               key={index}
               onClick={item.handleClick}
-              className="w-full border-t [&>svg]:size-5 hover:bg-white hover:dark:bg-lightGray/10  [&>svg]:opacity-75  dark:border-lightGray/10 px-3 py-2 border-neutral-200/60  flex items-center justify-start gap-0"
+              className="w-full border-t [&>svg]:size-5 hover:bg-white hover:dark:bg-lightGray/10  [&>svg]:opacity-75  dark:border-neutral-600 px-3 py-2 border-neutral-200/60  flex items-center justify-start gap-0"
             >
               {item.icon}
               <span className="tracking-tight ml-1 ">{item.text}</span>

@@ -13,6 +13,8 @@ import {
   $getSelection,
   $insertNodes,
   $isNodeSelection,
+  $isParagraphNode,
+  $isRangeSelection,
   $isRootOrShadowRoot,
   $setSelection,
   COMMAND_PRIORITY_EDITOR,
@@ -24,7 +26,7 @@ import {
   LexicalEditor,
   createCommand,
 } from "lexical";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 
 import {
   $createImageNode,
@@ -47,7 +49,7 @@ export default function ImagesPlugin({
   captionsEnabled,
 }: {
   captionsEnabled?: boolean;
-}): JSX.Element | null {
+}): ReactNode {
   const [editor] = useLexicalComposerContext();
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {
@@ -58,12 +60,35 @@ export default function ImagesPlugin({
       editor.registerCommand<InsertImagePayload>(
         INSERT_IMAGE_COMMAND,
         (payload) => {
+          // const imageNode = $createImageNode(payload);
+          // $insertNodes([imageNode]);
+          // console.log("inserted image node:", imageNode);
+          // if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
+          //   console.log("inserted image node in root:", imageNode);
+          //   $wrapNodeInElement(imageNode, $createParagraphNode).selectEnd();
+          // }
           const imageNode = $createImageNode(payload);
-          $insertNodes([imageNode]);
-          if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
-            $wrapNodeInElement(imageNode, $createParagraphNode).selectEnd();
+          const selection = $getSelection();
+
+          if ($isRangeSelection(selection)) {
+            const anchorNode = selection.anchor.getNode();
+            const parent = anchorNode.getParent();
+            console.log("is range selection:", parent);
+            // If cursor is inside a paragraph, insert the image *after* it
+            if (parent && $isParagraphNode(parent)) {
+              parent.insertAfter(imageNode);
+              console.log("inserted after paragraph:", imageNode);
+            } else {
+              console.log("inserted at root:", imageNode);
+              // Otherwise insert at root
+              $insertNodes([imageNode]);
+            }
+          } else {
+            $insertNodes([imageNode]);
           }
 
+          // Clear selection so cursor doesn't end up "inside" the image
+          $setSelection(null);
           return true;
         },
         COMMAND_PRIORITY_EDITOR

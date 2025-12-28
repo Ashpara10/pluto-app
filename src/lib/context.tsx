@@ -23,6 +23,7 @@ type ContextStateType = {
   isDeleteWorkspaceDialogOpen?: boolean;
   isDeleteDocumentDialogOpen?: boolean;
   isAddToCollectionDialogOpen?: boolean;
+  isSearchDialogOpen?: boolean;
 };
 type setContextType = [
   ContextStateType,
@@ -34,6 +35,7 @@ type setContextType = [
     setIsCreateWorkspaceDialogOpen?: UpdateStateFunctionType;
     setIsDeleteWorkspaceDialogOpen?: UpdateStateFunctionType;
     setIsDeleteDocumentDialogOpen?: UpdateStateFunctionType;
+    setIsSearchDialogOpen?: UpdateStateFunctionType;
   }
 ];
 
@@ -49,6 +51,7 @@ const defaultContextState: ContextStateType = {
   isCreateWorkspaceDialogOpen: false,
   isDeleteWorkspaceDialogOpen: false,
   isDeleteDocumentDialogOpen: false,
+  isSearchDialogOpen: false,
 };
 
 export const Context = createContext([
@@ -61,6 +64,7 @@ export const Context = createContext([
     setIsCreateWorkspaceDialogOpen: () => {},
     setIsDeleteWorkspaceDialogOpen: () => {},
     setIsDeleteDocumentDialogOpen: () => {},
+    setIsSearchDialogOpen: () => {},
   },
 ] as setContextType);
 
@@ -190,6 +194,20 @@ export const useActiveView = () => {
     setActiveView: context[0].setActiveView,
   };
 };
+
+export const useSearchDialog = () => {
+  const context = useContext(Context);
+
+  if (!context) {
+    throw new Error("Context error");
+  }
+
+  return {
+    isSearchDialogOpen: context[0].isSearchDialogOpen,
+    setIsSearchDialogOpen: context[1].setIsSearchDialogOpen,
+  };
+};
+
 const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
@@ -244,6 +262,13 @@ const AppContextProvider = ({ children }: { children: ReactNode }) => {
     },
     [openContext, setOpenContext]
   );
+
+  const setIsSearchDialogOpen = useCallback(
+    (isOpen: boolean) => {
+      setOpenContext({ ...openContext, isSearchDialogOpen: isOpen });
+    },
+    [openContext, setOpenContext]
+  );
   return (
     <Context.Provider
       value={[
@@ -264,6 +289,7 @@ const AppContextProvider = ({ children }: { children: ReactNode }) => {
           setIsAddToCollectionDialogOpen,
           setIsDeleteWorkspaceDialogOpen,
           setIsDeleteDocumentDialogOpen,
+          setIsSearchDialogOpen,
         },
       ]}
     >

@@ -2,13 +2,22 @@ import NextAuthSessionProvider from "@/lib/session-provider";
 import "./globals.css";
 import "./editor.css";
 import { ThemeProvider } from "next-themes";
-import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Instrument_Serif, Inter } from "next/font/google";
 
-const inter = localFont({
-  src: "./font/InterVariable.ttf",
+const inter = Inter({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+  variable: "--font-inter",
   display: "swap",
 });
+const instrument = Instrument_Serif({
+  weight: ["400"],
+  subsets: ["latin"],
+  variable: "--font-instrument",
+  display: "swap",
+});
+
 export const metadata = {
   title: "Pluto",
   description:
@@ -21,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.className}`}>
-      <body className="h-screen w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+    <html lang="en" className={`${inter.variable} ${instrument.variable}`}>
+      <body className="min-h-screen w-full  bg-neutral-100 dark:bg-neutral-900">
         <ThemeProvider attribute="class" defaultTheme="system">
           <NuqsAdapter>
             <NextAuthSessionProvider>{children}</NextAuthSessionProvider>

@@ -3,26 +3,40 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { LexicalEditor } from "lexical";
-import { useRef } from "react";
+import { $getRoot, LexicalEditor } from "lexical";
+import { useEffect, useRef } from "react";
 import EditorPlugins from "./plugins";
 import ParseContentPlugin from "./plugins/ParseContentPlugin";
+import { cn } from "@/lib/utils";
 
 interface EditorProps {
+  id?: string;
+  className?: string;
   content: string;
   setContent?: (data: string) => void;
 }
 
-function Editor({ content, setContent }: EditorProps) {
+function Editor({ content, setContent, id, className }: EditorProps) {
   const editor = useRef<LexicalEditor>(null);
+
+  useEffect(() => {
+    const root = editor.current?.getEditorState().read(() => {
+      const root = $getRoot();
+      return root.getChildren().map((n) => n.getType());
+    });
+    console.log("Current nodes:", root);
+  }, []);
 
   return (
     <>
       <RichTextPlugin
         contentEditable={
           <ContentEditable
-            id="editor"
-            className="relative min-h-screen w-full overflow-hidden  pb-12"
+            id={id || "editor"}
+            className={cn(
+              "relative focus-visible:outline-none min-h-screen w-full overflow-hidden  pb-12 ",
+              className
+            )}
           />
         }
         placeholder={<div>Enter some text...</div>}
@@ -30,8 +44,8 @@ function Editor({ content, setContent }: EditorProps) {
       />
 
       <ParseContentPlugin content={content!} setContent={setContent} />
-      <EditorRefPlugin editorRef={editor} />
       <EditorPlugins />
+      <EditorRefPlugin editorRef={editor} />
     </>
   );
 }

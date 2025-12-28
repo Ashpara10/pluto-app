@@ -15,11 +15,11 @@ export async function GET(
   {
     params,
   }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
   }
 ) {
   try {
-    const slug = params?.slug;
+    const { slug } = await params;
     const session = await getServerAuthSession();
     const sortBy = req.nextUrl.searchParams?.get("sortBy");
     const filters: SQL[] = [eq(documents.id, workspaceToDocuments.documentId)];

@@ -1,15 +1,18 @@
+import { useRef } from "react";
 import { ResizablePanel } from "../ui/resizable";
 import ChatAssistant from "./chat-assistant";
+import { ImperativePanelHandle } from "react-resizable-panels";
 
 const ChatWithDocumentSidebar = () => {
+  const ref = useRef<ImperativePanelHandle>(null);
+
   return (
-    <ResizablePanel
-      id="chat-with-document-sidebar"
-      className="relative hidden z-20 h-screen md:flex "
-      maxSize={30}
-    >
-      <ChatAssistant />
-    </ResizablePanel>
+
+    <ChatAssistant
+      isCollapsed={Boolean(ref?.current?.isCollapsed())}
+      handleCollapse={() => ref?.current?.collapse()}
+    />
+
   );
 };
 

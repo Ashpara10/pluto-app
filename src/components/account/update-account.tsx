@@ -57,7 +57,7 @@ const UpdateWorkspaceSettings: FC<{
 }> = ({ workspaces, curentWorkspace }) => {
   const form = useFormContext();
   return (
-    <div className="mt-6 w-full border dark:border-lightGray/10 border-neutral-300/80 rounded-lg p-3 ">
+    <div className="mt-6 w-full border dark:border-neutral-600 border-neutral-300/80 rounded-lg p-3 ">
       <div>
         <h3 className="text-xl font-medium tracking-tight">
           Configure Workspace Settings
@@ -79,7 +79,7 @@ const UpdateWorkspaceSettings: FC<{
                       <SelectValue placeholder="Select a verified email to display" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="dark:border-lightGray/10 border-neutral-300/80 bg-neutral-100 dark:bg-neutral-800">
+                  <SelectContent className="dark:border-neutral-600 border-neutral-300/80 bg-neutral-100 dark:bg-neutral-800">
                     {workspaces?.map((workspace, i) => {
                       return (
                         <SelectItem key={i} value={workspace?.name}>

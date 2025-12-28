@@ -51,7 +51,7 @@ export const DocumentListViewSkeleton = () => {
     return (
       <Skeleton
         key={i}
-        className="mt-2 h-12 w-full animate-pulse rounded-lg bg-darkGray/60 dark:bg-lightGray/10"
+        className="mt-2 h-12 w-full animate-pulse rounded-lg bg-neutral-200/40 dark:bg-[#DCDADE]/10"
       />
     );
   });

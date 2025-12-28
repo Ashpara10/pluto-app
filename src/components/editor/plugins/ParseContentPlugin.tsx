@@ -26,6 +26,7 @@ const ParseContentPlugin: FC<TParseContentPlugin> = ({ content }) => {
       console.log({ nodes, content });
       $getRoot().clear().select();
       $insertNodes(nodes);
+      
       setIsFirstRender(false);
     });
   }, [isFirstRender, content, editor]);

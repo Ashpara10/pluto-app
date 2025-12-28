@@ -12,7 +12,7 @@ const EmptyDocuments = () => {
   const isCollectionsPage = pathname.includes("/collection/");
 
   return (
-    <div className="w-full h-[68vh] border-2 border-dashed flex items-center justify-center border-neutral-200 dark:border-lightGray/10 rounded-lg p-4">
+    <div className="w-full h-[68vh] border-2 border-dashed flex items-center justify-center border-neutral-200 dark:border-neutral-600 rounded-lg p-4">
       <div className="flex max-w-xs flex-col items-center justify-center">
         <h4 className="text-lg font-medium tracking-tight leading-snug">
           {isCollectionsPage

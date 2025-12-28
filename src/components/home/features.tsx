@@ -104,7 +104,7 @@ type FeatureCardProps = {
 const FeatureCard: FC<FeatureCardProps> = ({ feature }) => {
   return (
     <div className="w-full mt-4 md:mt-3">
-      <div className="w-full group overflow-hidden relative  rounded-2xl  mb-3 border  border-neutral-200 dark:border-lightGray/10 ">
+      <div className="w-full group overflow-hidden relative  rounded-2xl  mb-3 border  border-neutral-200 dark:border-neutral-600 ">
         {feature?.image && (
           <Image
             src={feature.image}

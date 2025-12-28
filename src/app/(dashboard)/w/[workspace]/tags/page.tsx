@@ -42,14 +42,14 @@ const Page = () => {
             const name = doc.tag.split("-").join(" ");
             return (
               <AccordionItem
-                className="w-full border-y border-neutral-300 dark:border-lightGray/10 py-2"
+                className="w-full border-y border-neutral-300 dark:border-neutral-600 py-2"
                 value={`tags-${doc?.tag}`}
                 key={doc.tag}
               >
-                <AccordionTrigger className="text-base border-neutral-300 font-medium dark:border-lightGray/10 px-4 lg:px-6 py-3">
+                <AccordionTrigger className="text-base border-neutral-300 font-medium dark:border-neutral-600 px-4 lg:px-6 py-3">
                   {toUppercase(name)} ({doc?.documents?.length})
                 </AccordionTrigger>
-                <AccordionContent className="data-[state='open']:border-t border-0 border-neutral-300 dark:border-lightGray/10 border-t py-4 px-2 flex flex-col items-center justify-start">
+                <AccordionContent className="data-[state='open']:border-t border-0 border-neutral-300 dark:border-neutral-600 border-t py-4 px-2 flex flex-col items-center justify-start">
                   {activeView === "list" ? (
                     <DocumentListView
                       isLoading={isLoading}

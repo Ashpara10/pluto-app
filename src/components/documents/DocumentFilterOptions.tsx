@@ -59,7 +59,7 @@ const DocumentFilterOptions: FC<DocumentFilterOptionsProps> = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="border  p-0 mr-3 border-neutral-200/60  bg-white  dark:border-lightGray/10 dark:bg-neutral-800/90 backdrop-blur-lg mt-2 ">
+      <PopoverContent className="border  p-0 mr-3 border-neutral-200/60  bg-white  dark:border-neutral-600 dark:bg-neutral-800/90 backdrop-blur-lg mt-2 ">
         <div className="space-y-4">
           <div className="space-y-2 ">
             <motion.div
@@ -72,7 +72,7 @@ const DocumentFilterOptions: FC<DocumentFilterOptionsProps> = ({
                     key={i}
                     onClick={() => onViewChange(option?.key)}
                     className={cn(
-                      "w-full cursor-pointer relative border rounded-lg dark:border-lightGray/10 border-neutral-200/60  h-[50px] flex items-center justify-center px-4",
+                      "w-full cursor-pointer relative border rounded-lg dark:border-neutral-600 border-neutral-200/60  h-[50px] flex items-center justify-center px-4",
                       activeView === option?.key && "border-none"
                     )}
                   >
@@ -103,7 +103,7 @@ const DocumentFilterOptions: FC<DocumentFilterOptionsProps> = ({
                       setSortBy(option.key);
                     }}
                     className={cn(
-                      "w-full relative flex cursor-pointer items-center justify-start px-4 py-1.5 first-line:border-none border-t border-neutral-300/60 dark:border-lightGray/10 "
+                      "w-full relative flex cursor-pointer items-center justify-start px-4 py-1.5 first-line:border-none border-t border-neutral-300/60 dark:border-neutral-600 "
                     )}
                   >
                     {option?.icon}

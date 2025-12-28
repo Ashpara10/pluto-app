@@ -1,15 +1,105 @@
 "use server";
 import { revalidateDocumentData } from "@/app/(dashboard)/w/[workspace]/document/[id]/actions";
-import { eq, inArray, is, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { getServerAuthSession } from "../auth";
 import { CreateDocumentPayload, TGetDocument } from "../types";
 import { db } from "./drizzle";
 import {
   collectionToDocuments,
-  Document,
+  documentEmbeddings,
   documents,
   workspaceToDocuments,
+  tags as tagSchema,
+  documentTags,
 } from "./schema";
+
+import { chunkMarkdown } from "../embeddings";
+import { embed, embedMany } from "ai";
+import google from "../ai";
+
+export const handleDocumentTags = async ({
+  tags,
+  documentId,
+}: {
+  documentId: string;
+  tags: string[];
+}) => {
+  try {
+    const existingTags = await db
+      .select()
+      .from(tagSchema)
+      .where(inArray(tagSchema.name, tags));
+    const documentTagsToDelete = await db
+      .select()
+      .from(documentTags)
+      .leftJoin(tagSchema, eq(documentTags.tagId, tagSchema.id))
+      .where(eq(documentTags.documentId, documentId));
+
+    const existingTagNames = existingTags.map((t) => t.name);
+    const newTags = tags.filter((t) => !existingTagNames.includes(t));
+
+    // Insert new tags into the tags table
+    const insertedTags = await Promise.all(
+      newTags.map(async (tag) => {
+        const inserted = await db
+          .insert(tagSchema)
+          .values({ name: tag, workspaceSlug: "" })
+          .returning();
+        return inserted[0];
+      })
+    );
+
+    const allTags = [...existingTags, ...insertedTags];
+
+    // Now handle the documentTags table
+    const existingDocumentTags = await db
+      .select()
+      .from(documentTags)
+      .where(
+        and(
+          eq(documentTags.documentId, documentId),
+          inArray(
+            documentTags.tagId,
+            allTags.map((t) => t.id)
+          )
+        )
+      );
+    const existingDocumentTagIds = existingDocumentTags.map((dt) => dt.tagId);
+
+    const newDocumentTags = allTags.filter(
+      (t) => !existingDocumentTagIds.includes(t.id)
+    );
+
+    // Insert new documentTags
+    await Promise.all(
+      newDocumentTags.map(async (tag) => {
+        await db.insert(documentTags).values({
+          documentId: documentId,
+          tagId: tag.id,
+        });
+      })
+    );
+
+    // Delete removed tags from documentTags
+
+    const tagsToDelete = documentTagsToDelete
+      .filter((dt) => !tags.includes(dt.tags?.name as string))
+      .map((dt) => dt.tags?.id as string);
+    if (tagsToDelete.length > 0) {
+      await db
+        .delete(documentTags)
+        .where(
+          and(
+            eq(documentTags.documentId, documentId),
+            inArray(documentTags.tagId, tagsToDelete)
+          )
+        );
+    }
+  } catch (error) {
+    console.error("Error handling document tags:", error);
+    throw error;
+  }
+};
 
 export const getDocumentById = async (id: string) => {
   try {
@@ -46,14 +136,12 @@ export const updateDocument = async ({
   content,
   id,
   title,
-  tags,
   markdown,
 }: {
   id: string;
   title: string;
   content: string;
   markdown: string;
-  tags: string[];
 }) => {
   try {
     const document = await db
@@ -62,7 +150,6 @@ export const updateDocument = async ({
         title: title,
         content: content,
         markdown: markdown,
-        tags: tags,
         updatedAt: new Date(),
       })
       .where(eq(documents.id, id))
@@ -117,7 +204,6 @@ export const createDocument = async ({
         title: title || `Untitled Document`,
         content: content || "",
         markdown: markdown || "",
-        tags: [],
       })
       .returning();
 
@@ -231,3 +317,62 @@ GROUP BY
     return { data: null, error: (error as Error).message };
   }
 };
+
+export const generateEmbedding = async (text: string, documentId: string) => {
+  try {
+    const embeddingExists = await db
+      .select()
+      .from(documentEmbeddings)
+      .where(eq(documentEmbeddings.documentId, documentId));
+
+    // if (embeddingExists.length > 0) {
+    //   console.log("Embedding already exists");
+    //   return;
+    // }
+    const chunks = chunkMarkdown(text);
+
+    const chunked = chunkArray(chunks, 100);
+    console.log({ chunked });
+    for (const chunkBatch of chunked) {
+      const { embeddings } = await embedMany({
+        values: chunkBatch,
+        model: google.textEmbeddingModel("text-embedding-004"),
+      });
+      console.log({ embeddings });
+
+      await Promise.all(
+        embeddings.map((embedding, index) =>
+          db
+            .insert(documentEmbeddings)
+            .values({
+              documentId,
+              embedding,
+              chunkIndex: index,
+              chunk: chunks[index],
+            })
+            .onConflictDoUpdate({
+              target: [
+                documentEmbeddings.documentId,
+                documentEmbeddings.chunkIndex,
+              ],
+              set: {
+                embedding,
+                chunk: chunks[index],
+              },
+            })
+        )
+      );
+    }
+    console.log("done");
+    // console.log({ embeddings: embeddings.length, chunks: chunks.length });
+  } catch (error) {
+    console.error("Error generating embedding:", error);
+    throw error;
+  }
+};
+
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
+    arr.slice(i * size, i * size + size)
+  );
+}

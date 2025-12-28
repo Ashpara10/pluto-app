@@ -45,7 +45,7 @@ import {
   Text,
   TextQuote,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { JSX, useCallback, useMemo, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { INSERT_IMAGE_COMMAND } from "./ImagePlugin";
 import { INSERT_ASSISTANT_RESPONSE } from "./AskAssistantPlugin";
@@ -393,7 +393,7 @@ export default function ComponentPickerPlugin(): JSX.Element {
                 <div
                   className={cn(
                     "absolute z-50 mt-8 h-auto max-h-[330px] w-72 overflow-y-hidden scroll-smooth  rounded-lg px-1 py-2 shadow-md shadow-black/10 transition-all",
-                    "scrollbar-thin border border-lightGray bg-dark-popover dark:border-lightGray/20 "
+                    "scrollbar-thin border border-[#DCDADE] bg-dark-popover dark:border-[#DCDADE]/20 "
                   )}
                 >
                   <ul className="flex flex-col gap-2">

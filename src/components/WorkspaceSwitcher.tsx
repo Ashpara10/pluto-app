@@ -36,7 +36,7 @@ const WorkspaceSwitcher = () => {
       <PopoverTrigger asChild className="w-full max-w-64">
         <button
           onClick={() => setShow(!show)}
-          className="flex w-full items-center justify-center gap-x-1 rounded-lg border border-neutral-200/60 px-3 py-2  hover:bg-neutral-100 dark:border-lightGray/10 dark:hover:bg-lightGray/10"
+          className="flex w-full items-center justify-center gap-x-1 rounded-lg border border-neutral-200/60 px-3 py-2  hover:bg-neutral-100 dark:border-[#DCDADE]/10 dark:hover:bg-[#DCDADE]/10"
         >
           <div className="ml-1 w-full flex items-center justify-between">
             <span className="w-full text-left truncate text-sm leading-tight">
@@ -71,7 +71,7 @@ const WorkspaceSwitcher = () => {
                   return (
                     <div
                       key={workspace?.id}
-                      className="flex w-full cursor-pointer items-center justify-start border-t border-neutral-200/60  px-3 py-2 first:border-none  dark:border-lightGray/10 "
+                      className="flex w-full cursor-pointer items-center justify-start border-t border-neutral-200/60  px-3 py-2 first:border-none  dark:border-neutral-600 "
                       onClick={() => handleWorkspaceClick(workspace)}
                     >
                       <div>
@@ -102,7 +102,7 @@ const WorkspaceSwitcher = () => {
           onClick={() => {
             setIsCreateWorkspaceDialogOpen!(true);
           }}
-          className="group w-full flex cursor-pointer items-center justify-start gap-x-2 border-t border-neutral-200/60  px-3 py-2 dark:border-lightGray/10"
+          className="group w-full flex cursor-pointer items-center justify-start gap-x-2 border-t border-neutral-200/60  px-3 py-2 dark:border-neutral-600"
         >
           <Plus className="size-4 opacity-70 group-hover:opacity-100" />{" "}
           <span className="text-sm opacity-70 group-hover:opacity-100">

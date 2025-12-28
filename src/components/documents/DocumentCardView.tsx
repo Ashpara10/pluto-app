@@ -26,7 +26,7 @@ const DocumentCardView: FC<DocumentCardViewProps> = ({ data }) => {
   };
 
   return (
-    <section className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 ">
+    <section className="w-full columns-3  ">
       {data?.map(({ document, isFavorite }, i) => {
         return (
           <DocumentCardItem
@@ -48,12 +48,12 @@ export default DocumentCardView;
 
 export const DocumentCardViewSkeleton = () => {
   return (
-    <div className="w-full  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 ">
+    <div className="w-full columns-3  ">
       {[...Array(18)].map((_, i) => {
         return (
           <Skeleton
             key={i}
-            className=" h-[200px] w-full animate-pulse rounded-lg bg-darkGray/60 dark:bg-lightGray/10"
+            className="mt-3 first:mt-0 break-inside-avoid h-[200px] w-full animate-pulse rounded-lg bg-neutral-200/40 dark:bg-[#DCDADE]/10"
           />
         );
       })}

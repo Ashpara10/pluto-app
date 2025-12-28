@@ -12,7 +12,6 @@ import DragDropPlugin from "./DragDropPlugin";
 import ImagesPlugin from "./ImagePlugin";
 import ListMaxIndentLevelPlugin from "./ListIndentPlugin";
 import TableCellResizerPlugin from "./TableResizePlugin";
-import AskAssistantPlugin from "./AskAssistantPlugin";
 // import AskAssistantPlugin from "./AskAssistantPlugin";
 
 const EditorPlugins = () => {
@@ -29,7 +28,7 @@ const EditorPlugins = () => {
       <CheckListPlugin />
       <TablePlugin />
       <TableCellResizerPlugin />
-      <AskAssistantPlugin />
+      {/* <AskAssistantPlugin /> */}
       <MarkdownShortcutPlugin transformers={MDTRANSFORMERS} />
     </>
   );
