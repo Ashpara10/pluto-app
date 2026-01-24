@@ -2,7 +2,7 @@
 import { $generateNodesFromDOM } from "@lexical/html";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot, $insertNodes } from "lexical";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 
 type TParseContentPlugin = {
   content?: string;
@@ -12,24 +12,28 @@ type TParseContentPlugin = {
 
 const ParseContentPlugin: FC<TParseContentPlugin> = ({ content }) => {
   const [editor] = useLexicalComposerContext();
-  const [isFirstRender, setIsFirstRender] = useState(true);
 
   useEffect(() => {
-    if (!content) return;
-    if (isFirstRender) {
-      setIsFirstRender(false);
+    // Skip if no content
+    if (!content) {
+      // Clear editor if content is empty
+      editor?.update(() => {
+        $getRoot().clear();
+      });
+      return;
     }
+
+    // Parse and insert content whenever it changes
     editor?.update(() => {
       const parser = new DOMParser();
       const state = parser.parseFromString(content, "text/html");
       const nodes = $generateNodesFromDOM(editor, state);
-      console.log({ nodes, content });
+
+      // Clear existing content and insert new nodes
       $getRoot().clear().select();
       $insertNodes(nodes);
-      
-      setIsFirstRender(false);
     });
-  }, [isFirstRender, content, editor]);
+  }, [content, editor]); // Only depend on content and editor
 
   return <></>;
 };

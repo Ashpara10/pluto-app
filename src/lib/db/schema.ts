@@ -197,6 +197,36 @@ export const documentEmbeddings = pgTable(
   })
 );
 
+// Block-level persistence for RAG and semantic tracking
+export const documentBlocks = pgTable(
+  "document_blocks",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    blockKey: varchar("block_key", { length: 100 }).notNull(), // Lexical node key
+    blockType: varchar("block_type", { length: 50 }).notNull(), // paragraph, heading, list, etc.
+    content: text("content").notNull(),
+    textContent: text("text_content"), // Plain text for RAG
+    metadata: jsonb("metadata").$type<{
+      level?: number; // For headings (h1-h6)
+      listType?: "bullet" | "number" | "check";
+      language?: string; // For code blocks
+      [key: string]: any;
+    }>(),
+    position: integer("position").notNull(), // Order in document
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    uniqueDocumentBlock: unique("unique_document_block").on(
+      table.documentId,
+      table.blockKey
+    ),
+  })
+);
+
 type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Document = typeof documents.$inferSelect;
@@ -207,3 +237,5 @@ export type Workspace = typeof workspaces.$inferSelect;
 export type NewWorkspace = typeof workspaces.$inferInsert;
 export type DocumentEmbedding = typeof documentEmbeddings.$inferSelect;
 export type NewDocumentEmbedding = typeof documentEmbeddings.$inferInsert;
+export type DocumentBlock = typeof documentBlocks.$inferSelect;
+export type NewDocumentBlock = typeof documentBlocks.$inferInsert;

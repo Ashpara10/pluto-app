@@ -125,7 +125,7 @@ const DocumentCardItem = ({
   return (
     <Card
       className={cn(
-        "rounded-2xl min-h-[180px] break-inside-avoid first:mt-0 mt-3 w-full hover:bg-neutral-200/40  bg-neutral-50 hover:dark:bg-neutral-800  transition-all ease-in dark:bg-neutral-900  border dark:border-[#DCDADE]/10 border-neutral-200 group flex relative overflow-hidden group cursor-pointer",
+        "rounded-2xl min-h-[180px] break-inside-avoid first:mt-0 mt-3 w-full hover:bg-neutral-50 shadow  bg-white hover:dark:bg-neutral-800  transition-all ease-in dark:bg-neutral-900  border dark:border-[#DCDADE]/10 border-neutral-200 group flex relative overflow-hidden group cursor-pointer",
         checked &&
         "border-dashed hover:bg-current dark:border-violet-600 dark:bg-violet-800/5"
       )}

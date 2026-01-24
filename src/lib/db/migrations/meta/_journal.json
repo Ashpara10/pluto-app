@@ -15,6 +15,13 @@
       "when": 1737735924064,
       "tag": "0001_big_raza",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766937473943,
+      "tag": "0002_public_agent_brand",
+      "breakpoints": true
     }
   ]
 }

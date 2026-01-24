@@ -10,7 +10,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { useWindowEvent } from "@mantine/hooks";
 import { Loader, MoreVertical } from "lucide-react";
 import dynamic from "next/dynamic";
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
 import TransitionLayout from "../TransitionLayout";
@@ -35,6 +35,12 @@ const DocumentPage: FC<DocumentPageProps> = ({ document }) => {
   const [tags, setTags] = useState<string[]>(
     document?.tags?.map((t) => t.name) || []
   );
+
+  // Sync local state when document prop changes
+  useEffect(() => {
+    setData(document);
+    setTags(document?.tags?.map((t) => t.name) || []);
+  }, [document]);
 
   const didTagsChanged = () => {
     const tagsWithName = data?.tags?.map((t) => t.name).sort();
@@ -129,9 +135,11 @@ const DocumentPage: FC<DocumentPageProps> = ({ document }) => {
           />
         </div> */}
         <Editor
+          key={data?.id} // Force remount when document changes
           className=""
           content={data?.content as string}
           setContent={(data) => setData((p) => ({ ...p, content: data }))}
+          documentId={data?.id}
         />
         {/* <div className="hidden">
           <Editor

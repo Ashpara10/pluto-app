@@ -64,7 +64,7 @@ export default function DocumentCanvas({ documents, isLoading }: DocumentCanvasP
     );
 
     const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-        setDocumentId(!!documentId ? null : node.id);
+        setDocumentId(node.id);
     }, [setDocumentId, documentId]);
 
     if (isLoading) {

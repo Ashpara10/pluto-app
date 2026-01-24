@@ -26,23 +26,18 @@ const RightSidebar = () => {
     return (
         <ResizablePanel
             id="chat-with-document-sidebar"
-            className="relative overflow-hidden flex-col dark:bg-neutral-800 hidden z-20 h-screen md:flex "
-            maxSize={documentId ? 60 : 40}
+            className="relative overflow-hidden flex-col dark:bg-neutral-900 hidden z-20 h-screen md:flex "
+            maxSize={40}
             collapsible
             ref={ref}
         >
-            {/* {documentId && document?.data &&
-            */}
+
             <div className="flex items-center justify-start py-2">
                 <Button onClick={() => ref?.current?.collapse()} variant="ghost" size={"smallIcon"} className='rounded-full'>
                     <X className="size-4" />
                 </Button>
             </div>
 
-            {/* {!documentId ? <ChatAssistant
-                isCollapsed={Boolean(ref?.current?.isCollapsed())}
-                handleCollapse={() => ref?.current?.collapse()}
-            /> : */}
             {(!document?.data ? <div>
                 <Loader className='size-4 animate-spin' />
             </div> : <DocumentPage document={document?.data} />)}

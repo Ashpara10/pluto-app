@@ -14,9 +14,10 @@ interface EditorProps {
   className?: string;
   content: string;
   setContent?: (data: string) => void;
+  documentId?: string; // For block-level persistence
 }
 
-function Editor({ content, setContent, id, className }: EditorProps) {
+function Editor({ content, setContent, id, className, documentId }: EditorProps) {
   const editor = useRef<LexicalEditor>(null);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ function Editor({ content, setContent, id, className }: EditorProps) {
       />
 
       <ParseContentPlugin content={content!} setContent={setContent} />
-      <EditorPlugins />
+      <EditorPlugins documentId={documentId} />
       <EditorRefPlugin editorRef={editor} />
     </>
   );

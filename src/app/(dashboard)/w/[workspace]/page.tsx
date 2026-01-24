@@ -24,7 +24,8 @@ const Page: FC<PageProps> = async ({ params, searchParams }) => {
     throw new Error(documents?.error);
   }
   return (
-    <div className="w-full mx-auto max-w-5xl px-2 pb-10 mt-10">
+    <div className="size-full ">
+      {/* mx-auto max-w-5xl px-2 pb-10 mt-10 */}
       {/* <DocumentViewOptions title="All Documents"> */}
       <AllDocuments
         initialData={documents?.data as TGetDocument[]}

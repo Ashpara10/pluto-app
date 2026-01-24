@@ -12,9 +12,14 @@ import DragDropPlugin from "./DragDropPlugin";
 import ImagesPlugin from "./ImagePlugin";
 import ListMaxIndentLevelPlugin from "./ListIndentPlugin";
 import TableCellResizerPlugin from "./TableResizePlugin";
+import BlockPersistencePlugin from "./BlockPersistencePlugin";
 // import AskAssistantPlugin from "./AskAssistantPlugin";
 
-const EditorPlugins = () => {
+interface EditorPluginsProps {
+  documentId?: string;
+}
+
+const EditorPlugins = ({ documentId }: EditorPluginsProps) => {
   return (
     <>
       <ComponentPickerPlugin />
@@ -28,6 +33,8 @@ const EditorPlugins = () => {
       <CheckListPlugin />
       <TablePlugin />
       <TableCellResizerPlugin />
+      {/* Block-level persistence for RAG */}
+      {documentId && <BlockPersistencePlugin documentId={documentId} />}
       {/* <AskAssistantPlugin /> */}
       <MarkdownShortcutPlugin transformers={MDTRANSFORMERS} />
     </>
