@@ -26,7 +26,7 @@ const DocumentCardView: FC<DocumentCardViewProps> = ({ data }) => {
   };
 
   return (
-    <section className="w-full columns-3  ">
+    <section className="w-full columns-3 mt-24 max-w-2xl mx-auto  ">
       {data?.map(({ document, isFavorite }, i) => {
         return (
           <DocumentCardItem

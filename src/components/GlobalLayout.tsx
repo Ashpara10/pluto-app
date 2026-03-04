@@ -18,7 +18,7 @@ const GlobalLayout = ({ children }: { children: ReactNode }) => {
   return (
     <ResizablePanelGroup
       direction="horizontal"
-      className="relative h-screen w-full overflow-hidden bg-white  dark:bg-neutral-900"
+      className="relative h-screen w-full overflow-hidden bg-white"
     >
       <SidebarProvider>
         <MainSidebar />

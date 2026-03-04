@@ -46,13 +46,13 @@ const AllDocuments: FC<AllDocumentsProps> = ({ workspace, initialData }) => {
       <DocumentCardViewSkeleton />
     );
   }
-  return <DocumentCanvas documents={data as TGetDocument[]} isLoading={isLoading} />
+  // return <DocumentCanvas documents={data as TGetDocument[]} isLoading={isLoading} />
 
-  // return activeView === "grid" ? (
-  //   <DocumentCardView data={data as TGetDocument[]} isLoading={isLoading} />
-  // ) : (
-  //   <DocumentListView data={data as TGetDocument[]} isLoading={isLoading} />
-  // );
+  return activeView === "list" ? (
+    <DocumentCardView data={data as TGetDocument[]} isLoading={isLoading} />
+  ) : (
+    <DocumentListView data={data as TGetDocument[]} isLoading={isLoading} />
+  );
 };
 
 export default AllDocuments;

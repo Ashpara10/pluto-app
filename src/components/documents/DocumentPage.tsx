@@ -1,23 +1,20 @@
 "use client";
 import { updateDocument } from "@/lib/db/documents";
-import { Document } from "@/lib/db/schema";
-import { db } from "@/lib/dexie";
 import { queryClient } from "@/lib/session-provider";
-import { useToPng } from "@hugocxl/react-to-image";
+import { GetDocumentWithTags } from "@/lib/types";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { $convertToMarkdownString, TRANSFORMERS } from "@lexical/markdown";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useWindowEvent } from "@mantine/hooks";
 import { Loader, MoreVertical } from "lucide-react";
 import dynamic from "next/dynamic";
-import { FC, useState, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
+import { IMAGE_TRANSFORMER } from "../editor/theme";
 import TransitionLayout from "../TransitionLayout";
 import { Button } from "../ui/button";
-import { IMAGE_TRANSFORMER } from "../editor/theme";
 import Tags from "./Tags";
-import { GetDocumentWithTags, TTag } from "@/lib/types";
 
 type DocumentPageProps = {
   document: GetDocumentWithTags;
@@ -91,7 +88,7 @@ const DocumentPage: FC<DocumentPageProps> = ({ document }) => {
   return (
     <div className="px-4 ">
       <TransitionLayout>
-        {/* <div className="w-full flex mt-1 items-end justify-between mb-4">
+        <div className="w-full flex mt-1 items-end justify-between mb-4">
           <div>
             <span className=" opacity-75">
               {new Date(data?.createdAt as Date).toLocaleDateString("en-US", {
@@ -114,26 +111,18 @@ const DocumentPage: FC<DocumentPageProps> = ({ document }) => {
               <MoreVertical className="opacity-80 size-4" />
             </Button>
           </div>
-        </div> */}
+        </div>
 
         <TextareaAutosize
           autoFocus
-          className="w-full leading-none md:leading-tight tracking-tight resize-none font-medium text-2xl p-0 focus-visible:outline-none bg-transparent placeholder:text-neutral-300 dark:placeholder:text-neutral-700 border-none appearance-none shadow-none overflow-hidden "
+          className="w-full focus-within:bg-neutral-50 rounded-lg leading-none md:leading-tight tracking-tight resize-none font-medium text-2xl p-2 focus-visible:outline-none bg-transparent placeholder:text-neutral-300 dark:placeholder:text-neutral-700 border-none appearance-none shadow-none overflow-hidden "
           placeholder="Enter Title..."
           value={data?.title as string}
           onChange={(e) => setData((p) => ({ ...p, title: e.target.value }))}
         />
 
         <hr className="h-px mt-4 dark:border-[#DCDADE]/10 w-full" />
-        {/* <Tags tags={tags} setTags={setTags} /> */}
-        {/* <div className="w-full">
-          <TagInput
-            tags={tags}
-            setTags={setTags}
-            placeholder="Add tags..."
-            className="w-full"
-          />
-        </div> */}
+        <Tags tags={tags} setTags={setTags} />
         <Editor
           key={data?.id} // Force remount when document changes
           className=""
@@ -141,14 +130,14 @@ const DocumentPage: FC<DocumentPageProps> = ({ document }) => {
           setContent={(data) => setData((p) => ({ ...p, content: data }))}
           documentId={data?.id}
         />
-        {/* <div className="hidden">
+        <div className="hidden">
           <Editor
             id="editor-dark"
             className="dark"
             content={data?.content as string}
             setContent={(data) => setData((p) => ({ ...p, content: data }))}
           />
-        </div> */}
+        </div>
       </TransitionLayout>
     </div>
   );

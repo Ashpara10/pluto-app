@@ -6,7 +6,7 @@ import { ScrollArea } from "./ui/scroll-area";
 const TransitionLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
-      className="flex h-screen w-full"
+      className="flex h-screen max-w-3xl mx-auto w-full"
       // initial={{ opacity: 0.3, y: "600px" }}
       // animate={{ y: 0, opacity: 1 }}
       transition={{

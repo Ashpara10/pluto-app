@@ -74,21 +74,18 @@ const Landing = ({ scrollYProgress }: LandingProps) => {
       id="hero"
       className="w-full h-full overflow-x-hidden flex flex-col items-center justify-center"
     >
-      <motion.div
-        variants={gradientVariants}
-        initial="initial"
-        animate="animate"
-        className="absolute w-full h-screen bottom-0 -z-10  items-center  bg-gradient-to-t from-indigo-600 via-indigo-500 to-indigo-400"
-      />
+
       <div className=" w-full md:mt-[160px] md:max-w-5xl flex flex-col items-center justify-center px-4 md:px-0">
-        <h2 className="text-center dark:text-neutral-50 text-4xl font-medium tracking-tighter  ">
-          Create & Write Content <br /> with{" "}
-          <span className="font-thin font-instrument ">AI-Powered</span>{" "}
-          Intelligent Tools
+        <h2 className="text-center dark:text-neutral-50 text-black text-4xl tracking-tight font-medium   ">
+          Create & Write Content <br /> with{" "}AI-Powered
+          <span className="bg-gradient-to-r bg-clip-text ml-2 from-indigo-700 via-fuchsia-500 to-pink-400">
+            <span className=" text-transparent">
+              Intelligent Tools
+            </span>
+          </span>
         </h2>
-        <p className="text-xl tracking-tight text-center mt-6 text-neutral-200">
-          Your brain’s a thinker, not a filing cabinet. Let <br /> your thoughts
-          rest somewhere better.
+        <p className="text-xl tracking-tight text-center mt-6 dark:text-neutral-200 text-black font-serif">
+          Your brain’s a thinker, not a filing cabinet. Let <br /> your thoughts rest somewhere better.
           {/* Effortless document management meets AI-powered chat <br />
           Pluto revolutionizes the way you create, organize, and collaborate. */}
         </p>

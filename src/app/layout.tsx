@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${instrument.variable}`}>
       <body className="min-h-screen w-full  bg-neutral-100 dark:bg-neutral-900">
-        <ThemeProvider attribute="class" defaultTheme="system">
+        <ThemeProvider attribute="class" defaultTheme="light">
           <NuqsAdapter>
             <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
           </NuqsAdapter>
